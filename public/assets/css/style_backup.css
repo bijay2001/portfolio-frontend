@@ -1,0 +1,247 @@
+/* =========================================
+   1. SETUP & VARIABLES
+   ========================================= */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+    --bg-dark: #0b0c10;
+    --text-light: #e2e8f0;
+    --text-muted: #94a3b8;
+    --brand-purple: #7B61FF;
+    --brand-green: #00df9a;
+    --nav-height: 80px;
+    --gradient-main: linear-gradient(135deg, #7B61FF 0%, #00df9a 100%);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+    --glass-bg: rgba(255, 255, 255, 0.03);
+}
+
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: var(--nav-height);
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: white;
+    font-family: 'Poppins', sans-serif;
+    overflow-x: hidden;
+    margin: 0;
+    -webkit-tap-highlight-color: transparent; /* Removes blue highlight on mobile tap */
+}
+
+/* =========================================
+   2. NAVBAR (Mobile Optimized)
+   ========================================= */
+.navbar {
+    background: rgba(11, 12, 16, 0.95);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-bottom: var(--glass-border);
+    min-height: var(--nav-height);
+    padding: 10px 0;
+    position: fixed !important; 
+    top: 0; left: 0; width: 100%;
+    z-index: 9999 !important; 
+}
+
+.nav-link {
+    color: var(--text-light) !important;
+    font-weight: 500;
+    padding: 0.8rem 1rem !important; /* Larger touch target for mobile */
+    transition: 0.3s;
+}
+
+.nav-link:hover, .nav-link.active {
+    color: var(--brand-purple) !important;
+}
+
+/* Toggler Styles */
+.navbar-toggler {
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    padding: 0.5rem 0.75rem;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.navbar-toggler:focus {
+    border-color: var(--brand-purple) !important;
+}
+
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255, 255, 255, 1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
+}
+
+/* Mobile Dropdown Styling */
+@media (max-width: 991px) {
+    .navbar-collapse {
+        background: #0b0c10;
+        padding: 20px;
+        border-radius: 15px;
+        border: 1px solid rgba(255,255,255,0.1);
+        margin-top: 15px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+    }
+    .nav-separator { display: none !important; }
+    .d-flex.align-items-center.gap-3 { 
+        justify-content: center; 
+        margin-top: 15px; 
+    }
+}
+
+/* =========================================
+   3. HERO SECTION (Responsive Layout)
+   ========================================= */
+.hero-section {
+    padding-top: 120px; 
+    padding-bottom: 60px;
+    background-color: var(--bg-dark);
+    /* Use dvh (Dynamic Viewport Height) for mobile browser bars compatibility */
+    min-height: 100vh;
+    min-height: 100dvh; 
+}
+
+.hero-grid-overlay {
+    position: absolute; inset: 0;
+    background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 40px 40px; /* Smaller grid for mobile */
+    opacity: 0.5; z-index: 0;
+    mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+    -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+}
+
+.text-gradient-hero {
+    background: linear-gradient(to right, #7B61FF, #00df9a);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Buttons */
+.btn-hero-primary, .btn-hero-glass {
+    padding: 12px 30px;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-hero-primary {
+    background: linear-gradient(90deg, #7B61FF, #6c4df6);
+    color: white; border: none; 
+    box-shadow: 0 10px 30px rgba(123, 97, 255, 0.3);
+}
+
+.btn-hero-glass {
+    background: rgba(255, 255, 255, 0.03); 
+    border: 1px solid rgba(255, 255, 255, 0.2); 
+    color: white;
+}
+
+/* Image Wrapper Responsive */
+.hero-compact-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 360px; /* Desktop max */
+    aspect-ratio: 4/5; /* Maintains shape on all devices */
+    margin: 0 auto;
+    z-index: 1;
+}
+
+.hero-glass-card {
+    position: absolute; inset: 0;
+    background: rgba(255, 255, 255, 0.03); 
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    transform: rotate(-6deg);
+}
+
+.hero-img-box {
+    position: absolute; inset: 10px; 
+    background: #111; 
+    border-radius: 20px; 
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.hero-img-box img { width: 100%; height: 100%; object-fit: cover; }
+
+/* Animation */
+@keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-15px); } }
+.floating-anim { animation: float 6s ease-in-out infinite; }
+
+/* =========================================
+   4. DEVICE SPECIFIC QUERIES
+   ========================================= */
+
+/* --- TABLET (iPad, Galaxy Tab) 768px to 991px --- */
+@media (max-width: 991px) {
+    .hero-section {
+        text-align: center;
+        /* Center content vertically on tablet */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    
+    .hero-compact-wrapper {
+        max-width: 300px; /* Slightly smaller on tablet */
+        margin-bottom: 50px; /* Space between image and text */
+    }
+
+    h1.display-3 {
+        font-size: 3rem; /* Resize font for tablet */
+    }
+}
+
+/* --- MOBILE (Phones) Max 576px --- */
+@media (max-width: 576px) {
+    .hero-section {
+        padding-top: 100px;
+        text-align: center;
+    }
+
+    /* Typography Scaling */
+    h1.display-3 {
+        font-size: 2.2rem;
+        line-height: 1.2;
+    }
+    
+    h3.h5 {
+        font-size: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    p.lead {
+        font-size: 0.95rem;
+        padding: 0 10px; /* Prevent text hitting edges */
+    }
+
+    /* Buttons Stack Vertical */
+    .d-flex.gap-3 {
+        flex-direction: column;
+        width: 100%;
+        gap: 15px !important;
+    }
+    
+    .btn-hero-primary, .btn-hero-glass {
+        width: 100%;
+        display: block;
+        padding: 14px 20px;
+    }
+
+    /* Image Sizing */
+    .hero-compact-wrapper {
+        max-width: 260px;
+        margin-bottom: 40px;
+    }
+
+    /* Blobs adjustments to prevent lag on old phones */
+    .hero-blob {
+        opacity: 0.3;
+        filter: blur(60px);
+    }
+}
+
+/* --- SMALL MOBILE (Foldables/Old SE) Max 360px --- */
+@media (max-width: 360px) {
+    h1.display-3 { font-size: 1.8rem; }
+    .hero-compact-wrapper { max-width: 220px; }
+}
