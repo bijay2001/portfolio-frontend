@@ -8,13 +8,15 @@ const Contact = () => {
     const [formData, setFormData] = useState({ name: '', email: '', message: '' });
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
 
         try {
             const response = await api.post('/contact', formData);
-            if (response.data.status === 'success') {
+            
+            // Check for 'success' instead of 'status'
+            if (response.data.success) {
                 Swal.fire({
                     icon: 'success',
                     title: 'Message Sent!',
@@ -29,7 +31,7 @@ const Contact = () => {
                 });
                 setFormData({ name: '', email: '', message: '' });
             } else {
-                throw new Error(response.data.message);
+                throw new Error(response.data.message || 'Submission failed');
             }
         } catch (error) {
             Swal.fire({
