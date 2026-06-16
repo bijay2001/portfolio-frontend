@@ -1,15 +1,15 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, Code2, Sparkles, Database, Server, Cpu } from 'lucide-react';
+import { ArrowRight, FileText, Code2 } from 'lucide-react';
 import api from '../api/axiosClient';
+
+// Import your new LightRays component instead of SideRays
+import LightRays from '../animations/LightRays';
+import TextType from '../animations/TextType';
 
 const Hero = () => {
     const [profile, setProfile] = useState(null);
-    const canvasRef = useRef(null);
 
-    // ----------------------------------------------------
-    // 1. Dynamic Data Logic
-    // ----------------------------------------------------
     useEffect(() => {
         const fetchProfile = async () => {
             try {
@@ -24,601 +24,384 @@ const Hero = () => {
         fetchProfile();
     }, []);
 
-    const heroHeadline = profile?.hero_headline || "Building Secure, Scalable <br/> <span class='text-gradient'>Digital Experiences.</span>";
-    const roleTitle = profile?.title || "Full Stack Developer | React, Node, MySQL & PHP";
+    const roleTitle = profile?.title || "Full Stack Developer | React, Node, PHP & MySQL";
+    const headlineText = "Building systems from the ground up.";
 
-    // ----------------------------------------------------
-    // 2. Neon Particle System
-    // ----------------------------------------------------
-    useEffect(() => {
-        const canvas = canvasRef.current;
-        const ctx = canvas.getContext('2d');
-        let animationFrameId;
-        let particles = [];
-        let mouse = { x: null, y: null, radius: 180 }; 
-
-        const handleMouseMove = (e) => {
-            mouse.x = e.x;
-            mouse.y = e.y;
-        };
-        const handleMouseOut = () => {
-            mouse.x = null;
-            mouse.y = null;
-        };
-        window.addEventListener('mousemove', handleMouseMove);
-        window.addEventListener('mouseout', handleMouseOut);
-
-        class Particle {
-            constructor(x, y) {
-                this.x = x;
-                this.y = y;
-                this.baseX = x;
-                this.baseY = y;
-                this.size = Math.random() * 2 + 0.5;
-                const colorRoll = Math.random();
-                if (colorRoll > 0.66) {
-                    this.color = `rgba(6, 182, 212, ${Math.random() * 0.5 + 0.15})`; // Cyan
-                } else if (colorRoll > 0.33) {
-                    this.color = `rgba(124, 58, 237, ${Math.random() * 0.5 + 0.15})`; // Purple
-                } else {
-                    this.color = `rgba(236, 72, 153, ${Math.random() * 0.5 + 0.15})`; // Pink
-                }
-                this.density = (Math.random() * 30) + 1;
-            }
-
-            draw() {
-                ctx.fillStyle = this.color;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.closePath();
-                ctx.fill();
-            }
-
-            update() {
-                this.baseX += (Math.random() - 0.5) * 0.3;
-                this.baseY += (Math.random() - 0.5) * 0.3;
-
-                let dx = mouse.x - this.x;
-                let dy = mouse.y - this.y;
-                let distance = Math.sqrt(dx * dx + dy * dy);
-                let forceDirectionX = dx / distance;
-                let forceDirectionY = dy / distance;
-                let maxDistance = mouse.radius;
-                let force = (maxDistance - distance) / maxDistance;
-                let directionX = forceDirectionX * force * this.density;
-                let directionY = forceDirectionY * force * this.density;
-
-                if (distance < maxDistance) {
-                    this.x -= directionX;
-                    this.y -= directionY;
-                } else {
-                    if (this.x !== this.baseX) {
-                        let dx = this.x - this.baseX;
-                        this.x -= dx / 25; 
-                    }
-                    if (this.y !== this.baseY) {
-                        let dy = this.y - this.baseY;
-                        this.y -= dy / 25; 
-                    }
-                }
-                this.draw();
-            }
-        }
-
-        function initParticles() {
-            particles = [];
-            let numberOfParticles = (canvas.width * canvas.height) / 5000; 
-            for (let i = 0; i < numberOfParticles; i++) {
-                let x = Math.random() * canvas.width;
-                let y = Math.random() * canvas.height;
-                particles.push(new Particle(x, y));
-            }
-        }
-
-        function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            for (let i = 0; i < particles.length; i++) {
-                particles[i].update();
-            }
-            animationFrameId = requestAnimationFrame(animate);
-        }
-
-        const handleResize = () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            initParticles();
-        };
-
-        window.addEventListener('resize', handleResize);
-        handleResize(); 
-        animate();      
-
-        return () => {
-            window.removeEventListener('resize', handleResize);
-            window.removeEventListener('mousemove', handleMouseMove);
-            window.removeEventListener('mouseout', handleMouseOut);
-            cancelAnimationFrame(animationFrameId);
-        };
-    }, []);
-
-    // ----------------------------------------------------
-    // 3. Premium Animations (Framer Motion)
-    // ----------------------------------------------------
-    const containerVariants = {
-        hidden: { opacity: 0 },
-        visible: { 
-            opacity: 1, 
-            transition: { staggerChildren: 0.15, delayChildren: 0.1 } 
-        }
-    };
-
-    const itemVariants = {
-        hidden: { opacity: 0, y: 30, filter: 'blur(8px)', scale: 0.98 },
+    // Smooth entry animations
+    const fadeUpVariants = {
+        hidden: { opacity: 0, y: 20, filter: 'blur(8px)' },
         visible: { 
             opacity: 1, 
             y: 0, 
-            filter: 'blur(0px)', 
-            scale: 1,
-            transition: { type: "spring", stiffness: 90, damping: 20, mass: 1 } 
+            filter: 'blur(0px)',
+            transition: { type: "spring", stiffness: 70, damping: 20 }
         }
     };
 
-    const floatingVariants = {
-        animate: (custom) => ({
-            y: [0, custom.y, 0],
-            rotate: [0, custom.rot, 0],
-            transition: {
-                duration: custom.dur,
-                repeat: Infinity,
-                ease: "easeInOut"
-            }
-        })
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: { staggerChildren: 0.1, delayChildren: 0.1 }
+        }
     };
 
     return (
         <section id="home" className="hero-section">
             
-            {/* Architectural Background Layers */}
-            <div className="bg-base"></div>
-            <div className="bg-mesh-gradient"></div>
-            <div className="hero-bg-grid"></div>
-            <canvas ref={canvasRef} className="antigravity-canvas"></canvas>
+            {/* Background Animations: Single Top-Center Light Ray */}
+            <div className="lightrays-wrapper">
+                <LightRays
+                    raysOrigin="top-center"
+                    raysColor="#00d9ff"    // Sleek Cyan color to match your theme
+                    raysSpeed={1.2}
+                    lightSpread={1.5}      // Spreads beautifully across the top
+                    rayLength={3}
+                    followMouse={true}     // Interactive mouse follow
+                    mouseInfluence={0.08}
+                    noiseAmount={0}
+                    distortion={0}
+                    pulsating={false}
+                    fadeDistance={1}
+                    saturation={1}
+                />
+            </div>
+            
+            {/* Vignette: Transparent at the top-center, dark at the bottom and sides */}
             <div className="hero-vignette"></div>
 
-            {/* Floating Tech Orbits */}
-            <div className="floating-orbits-container hide-on-mobile">
-                <motion.div 
-                    className="floating-orb orb-1"
-                    custom={{ y: -15, rot: 5, dur: 5 }}
-                    variants={floatingVariants}
-                    animate="animate"
-                >
-                    <div className="orb-glass"><Code2 size={24} color="#06B6D4" /></div>
-                </motion.div>
-                
-                <motion.div 
-                    className="floating-orb orb-2"
-                    custom={{ y: 20, rot: -8, dur: 7 }}
-                    variants={floatingVariants}
-                    animate="animate"
-                >
-                    <div className="orb-glass"><Server size={24} color="#7C3AED" /></div>
-                </motion.div>
-
-                <motion.div 
-                    className="floating-orb orb-3"
-                    custom={{ y: -12, rot: 6, dur: 6 }}
-                    variants={floatingVariants}
-                    animate="animate"
-                >
-                    <div className="orb-glass"><Database size={24} color="#EC4899" /></div>
-                </motion.div>
-            </div>
-
-            {/* Replaced 'container' class with purely custom wrapper to stop Bootstrap squeezing */}
             <div className="hero-content-wrapper">
                 <motion.div 
                     variants={containerVariants} 
                     initial="hidden" 
                     animate="visible"
-                    className="hero-content"
+                    className="hero-content-left"
                 >
                     
-                    {/* Premium Glowing Badge */}
-                    <motion.div variants={itemVariants} className="hero-badge-wrapper">
+                    {/* Glowing Tech Badge */}
+                    <motion.div variants={fadeUpVariants} className="badge-container">
                         <div className="status-badge">
                             <span className="badge-glow-dot"></span>
-                            <Cpu size={14} className="badge-icon" />
-                            <span className="badge-text">{roleTitle}</span>
-                            <Sparkles size={14} className="badge-icon-secondary" />
+                            <Code2 size={13} className="icon-cyan" />
+                            <span className="badge-text">Available for Hire</span>
                             <div className="badge-border-gradient"></div>
                         </div>
                     </motion.div>
 
-                    {/* High-Impact Typography Headline */}
-                    <motion.h1 
-                        variants={itemVariants}
-                        className="hero-title"
-                        dangerouslySetInnerHTML={{ __html: heroHeadline }}
-                    />
+                    {/* Static, Sleek Role Title */}
+                    <motion.h3 variants={fadeUpVariants} className="hero-role-static">
+                        {roleTitle}
+                    </motion.h3>
 
-                    {/* ATS-Friendly Subtitle (Widened to breathe properly) */}
-                    <motion.p variants={itemVariants} className="hero-subtitle">
-                        Full Stack Developer with hands-on experience building dynamic web applications. <br className="hide-on-mobile" />
-                        I integrate <strong className="text-highlight">React.js</strong> and <strong className="text-highlight">Node.js</strong> with <strong className="text-highlight">MySQL</strong> and <strong className="text-highlight">PHP</strong> to deliver secure, real-world solutions ranging from custom full-stack systems to government portals.
+                    {/* Main Headline with Typing Effect */}
+                    <motion.div variants={fadeUpVariants} className="typing-headline-wrapper">
+                        <TextType 
+                            text={headlineText}
+                            as="h1"
+                            typingSpeed={40}
+                            deletingSpeed={20}
+                            loop={false}
+                            className="hero-title-typing"
+                            cursorClassName="hero-cursor"
+                        />
+                    </motion.div>
+
+                    {/* Authentic, ATS-Friendly Subtitle */}
+                    <motion.p variants={fadeUpVariants} className="hero-subtitle">
+                        Focused on the logic behind the code, I build dynamic web applications using <strong>React.js</strong>, <strong>Node.js</strong>, <strong>PHP</strong>, and <strong>MySQL</strong>. I engineer practical, real-world solutions—ranging from complex government portals to custom management systems.
                     </motion.p>
 
-                    {/* Simplified, Clean CTA Buttons */}
-                    <motion.div variants={itemVariants} className="hero-buttons-container">
-                        <a href="#projects" className="btn-simple-primary">
-                            Explore My Work 
-                            <ArrowRight size={18} className="btn-icon" />
+                    {/* Side-by-Side CTA Buttons */}
+                    <motion.div variants={fadeUpVariants} className="hero-buttons">
+                        <a href="#projects" className="btn-primary">
+                            View Projects
+                            <ArrowRight size={16} className="icon-arrow" />
                         </a>
-                        <a href="#contact" className="btn-premium-secondary">
-                            Let's Talk
+                        <a href="#resume" className="btn-secondary">
+                            <FileText size={16} className="icon-file" />
+                            My Resume
                         </a>
                     </motion.div>
 
                 </motion.div>
             </div>
 
-            {/* Subtle Scroll Indicator */}
-            <motion.div 
-                className="scroll-indicator-wrapper hide-on-mobile"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1, y: [0, 8, 0] }}
-                transition={{ opacity: { delay: 1.5, duration: 1 }, y: { repeat: Infinity, duration: 2.5, ease: "easeInOut" } }}
-            >
-                <div className="mouse-shape">
-                    <div className="mouse-wheel"></div>
-                </div>
-            </motion.div>
-
-            {/* --- 2026 PREMIUM SCOPED CSS --- */}
+            {/* --- 100% VANILLA SCOPED CSS --- */}
             <style>{`
-                @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+                @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
 
                 :root {
-                    --primary: #7C3AED;
-                    --secondary: #06B6D4;
-                    --accent: #EC4899;
-                    --bg-dark: #050816;
+                    --bg-deep: #05050A;
                     --text-main: #FFFFFF;
-                    
-                    --text-muted: #9CA3AF;
-                    --glass-bg: rgba(255, 255, 255, 0.02);
-                    --glass-border: rgba(255, 255, 255, 0.06);
+                    --text-muted: #A1A1AA;
+                    --accent-purple: #9333EA;
+                    --accent-cyan: #06B6D4;
                 }
 
                 .hero-section {
-                    padding: 160px 0 120px 0; 
                     position: relative;
+                    padding-top: 140px; 
+                    padding-bottom: 80px;
+                    min-height: 100vh;
                     display: flex;
                     align-items: center;
-                    justify-content: center;
-                    background-color: var(--bg-dark);
+                    background-color: var(--bg-deep);
                     overflow: hidden;
-                    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+                    font-family: 'Inter', sans-serif;
                 }
 
-                /* Architectural Depth Layers */
-                .bg-base {
-                    position: absolute;
-                    inset: 0;
-                    background: var(--bg-dark);
-                    z-index: 0;
-                }
-
-                .bg-mesh-gradient {
-                    position: absolute;
-                    top: -10%;
-                    left: 50%;
-                    transform: translateX(-50%);
-                    width: 70%;
-                    height: 70%;
-                    background: radial-gradient(circle at center, rgba(124, 58, 237, 0.15) 0%, rgba(6, 182, 212, 0.05) 40%, transparent 70%);
-                    filter: blur(80px);
-                    z-index: 1;
-                    pointer-events: none;
-                }
-
-                .hero-bg-grid {
-                    position: absolute;
-                    inset: 0;
-                    background-image: 
-                        linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
-                        linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
-                    background-size: 50px 50px;
-                    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 0%, transparent 100%);
-                    -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 0%, transparent 100%);
-                    z-index: 2;
-                }
-
-                .antigravity-canvas {
+                /* Fullscreen wrapper for LightRays */
+                .lightrays-wrapper {
                     position: absolute;
                     top: 0;
                     left: 0;
                     width: 100%;
                     height: 100%;
-                    z-index: 3;
-                    pointer-events: auto;
+                    z-index: 0;
                 }
 
+                /* Darkens the bottom so text pops, leaves top clear for the light */
                 .hero-vignette {
                     position: absolute;
-                    inset: 0;
-                    background: radial-gradient(circle at center, transparent 20%, var(--bg-dark) 100%);
-                    z-index: 4;
+                    top: 0; left: 0; right: 0; bottom: 0;
+                    background: radial-gradient(circle at 50% -20%, transparent 0%, rgba(5,5,10,0.85) 50%, var(--bg-deep) 100%);
+                    z-index: 1;
                     pointer-events: none;
                 }
 
-                /* Floating Tech Orbits */
-                .floating-orbits-container {
-                    position: absolute;
-                    top: 0;
-                    left: 50%;
-                    transform: translateX(-50%);
-                    width: 100%;
-                    max-width: 1100px; /* Widened to match the new text flow */
-                    height: 100%;
-                    z-index: 5;
-                    pointer-events: none;
-                }
-
-                .floating-orb { position: absolute; }
-
-                .orb-glass {
-                    padding: 14px;
-                    border-radius: 18px;
-                    background: rgba(255, 255, 255, 0.02);
-                    border: 1px solid rgba(255, 255, 255, 0.08);
-                    backdrop-filter: blur(16px);
-                    -webkit-backdrop-filter: blur(16px);
-                    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
-                }
-
-                .orb-1 { top: 20%; left: 0%; }
-                .orb-2 { top: 65%; right: 0%; }
-                .orb-3 { top: 15%; right: 15%; }
-
-                /* * PERFECT SPACING WRAPPER 
-                 * Replaces Bootstrap constraints to give beautiful, proportional breathing room.
-                 */
                 .hero-content-wrapper {
                     position: relative;
                     z-index: 10;
-                    text-align: center;
                     width: 100%;
-                    max-width: 1200px;
+                    max-width: 1200px; 
                     margin: 0 auto;
-                    padding: 0 2rem; /* Guarantees edge protection without squeezing */
+                    padding: 0 5%;
                 }
 
-                .hero-content {
+                .hero-content-left {
                     display: flex;
                     flex-direction: column;
-                    align-items: center;
-                    justify-content: center;
+                    align-items: flex-start;
+                    text-align: left;
+                    max-width: 650px; 
                 }
 
-                /* Premium Glowing Badge */
-                .hero-badge-wrapper { margin-bottom: 2rem; }
+                /* Badge Styles */
+                .badge-container { margin-bottom: 1.25rem; }
 
                 .status-badge {
                     position: relative;
                     display: inline-flex;
                     align-items: center;
-                    gap: 10px;
-                    padding: 8px 18px;
-                    background: var(--glass-bg);
+                    gap: 8px;
+                    padding: 6px 16px;
+                    background: rgba(255, 255, 255, 0.02);
                     border-radius: 100px;
-                    backdrop-filter: blur(20px);
-                    -webkit-backdrop-filter: blur(20px);
-                    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-                    overflow: hidden;
+                    backdrop-filter: blur(10px);
+                    -webkit-backdrop-filter: blur(10px);
+                    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
                 }
 
                 .badge-border-gradient {
                     position: absolute;
-                    inset: 0;
+                    top: 0; left: 0; right: 0; bottom: 0;
                     border-radius: 100px;
                     padding: 1px;
-                    background: linear-gradient(90deg, var(--secondary), var(--primary), var(--accent));
+                    background: linear-gradient(90deg, rgba(6,182,212,0.4), rgba(147,51,234,0.4));
                     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
                     -webkit-mask-composite: xor;
                     mask-composite: exclude;
-                    opacity: 0.5;
                 }
 
                 .badge-glow-dot {
-                    width: 8px;
-                    height: 8px;
-                    background: var(--secondary);
+                    width: 6px;
+                    height: 6px;
+                    background: var(--accent-cyan);
                     border-radius: 50%;
-                    box-shadow: 0 0 12px var(--secondary);
+                    box-shadow: 0 0 8px var(--accent-cyan);
                     animation: pulse 2s infinite ease-in-out;
                 }
 
-                .badge-icon, .badge-icon-secondary { color: var(--text-muted); }
+                .icon-cyan { color: var(--accent-cyan); }
 
                 .badge-text {
                     font-size: 0.75rem;
-                    letter-spacing: 0.06em;
+                    letter-spacing: 0.05em;
                     color: var(--text-main);
-                    font-weight: 600;
+                    font-weight: 500;
                     text-transform: uppercase;
                 }
 
-                /* Perfected Typography Scale */
-                .hero-title {
-                    font-size: clamp(2.2rem, 5vw, 4.25rem);
-                    line-height: 1.05;
-                    font-weight: 800;
+                .hero-role-static {
+                    font-family: 'Space Grotesk', sans-serif;
+                    font-size: clamp(1rem, 1.2vw, 1.15rem);
+                    font-weight: 500;
+                    color: var(--accent-cyan);
+                    margin: 0 0 0.5rem 0;
+                    letter-spacing: 0.01em;
+                }
+
+                /* Main Headline Typing Effect */
+                .typing-headline-wrapper {
+                    margin: 0 0 1.25rem 0;
+                    min-height: clamp(80px, 9vw, 110px); 
+                    display: flex;
+                    align-items: flex-start;
+                }
+
+                .hero-title-typing {
+                    font-family: 'Space Grotesk', sans-serif;
+                    /* SIZE DECREASED: Sleek, composed typography */
+                    font-size: clamp(2.2rem, 4.5vw, 3.4rem); 
+                    line-height: 1.15;
+                    font-weight: 700;
                     color: var(--text-main);
-                    letter-spacing: -0.03em;
-                    margin-bottom: 1.25rem;
-                    text-shadow: 0 10px 30px rgba(0,0,0,0.5);
+                    letter-spacing: -0.02em;
+                    margin: 0;
                 }
 
-                .hero-title .text-gradient {
-                    background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 50%, var(--accent) 100%);
-                    -webkit-background-clip: text;
-                    -webkit-text-fill-color: transparent;
-                    background-clip: text;
-                    display: inline-block;
-                    padding-bottom: 0.1em;
+                .hero-cursor {
+                    color: var(--accent-purple);
+                    font-weight: 300;
+                    animation: blink 1s step-end infinite;
                 }
 
+                /* Compact Subtitle */
                 .hero-subtitle {
-                    /* Increased from 640px to 760px to stop aggressive wrapping */
-                    max-width: 760px; 
-                    margin: 0 auto 3rem auto;
-                    font-size: clamp(0.95rem, 1.25vw, 1.1rem);
-                    line-height: 1.7;
+                    font-size: clamp(0.95rem, 1.1vw, 1.05rem);
+                    line-height: 1.6;
                     color: var(--text-muted);
                     font-weight: 400;
+                    max-width: 500px;
+                    margin: 0 0 2.5rem 0;
                 }
-
-                .text-highlight {
-                    color: var(--text-main);
+                
+                .hero-subtitle strong {
+                    color: #E4E4E7;
                     font-weight: 500;
                 }
 
-                /* Clean Native Buttons */
-                .hero-buttons-container {
+                /* Buttons Setup */
+                .hero-buttons {
                     display: flex;
                     align-items: center;
-                    justify-content: center;
-                    gap: 1.25rem;
+                    gap: 1rem;
+                    width: 100%;
                 }
 
-                .btn-simple-primary {
+                .btn-primary, .btn-secondary {
                     display: inline-flex;
                     align-items: center;
                     justify-content: center;
                     gap: 8px;
-                    background: var(--text-main);
-                    color: var(--bg-dark);
-                    border-radius: 100px;
-                    font-weight: 600;
-                    font-size: 1rem;
-                    padding: 15px 36px;
+                    border-radius: 6px; 
+                    font-weight: 500;
+                    font-size: 0.95rem;
+                    padding: 14px 28px;
                     text-decoration: none;
                     transition: all 0.2s ease;
-                    border: 1px solid transparent;
-                    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
                 }
 
-                .btn-simple-primary .btn-icon {
-                    transition: transform 0.2s ease;
+                .btn-primary {
+                    background: var(--text-main);
+                    color: var(--bg-deep);
                 }
 
-                .btn-simple-primary:hover {
+                .btn-primary .icon-arrow { transition: transform 0.2s ease; }
+
+                .btn-primary:hover {
                     transform: translateY(-2px);
-                    background: #F3F4F6;
-                    box-shadow: 0 8px 25px rgba(255, 255, 255, 0.15);
+                    background: #E4E4E7;
+                    box-shadow: 0 6px 20px rgba(255, 255, 255, 0.1);
                 }
 
-                .btn-simple-primary:hover .btn-icon {
-                    transform: translateX(4px);
+                .btn-primary:hover .icon-arrow { transform: translateX(3px); }
+
+                .btn-secondary {
+                    background: transparent;
+                    color: var(--text-main);
+                    border: 1px solid rgba(255, 255, 255, 0.15);
                 }
 
-                .btn-premium-secondary {
-                    display: inline-flex;
-                    align-items: center;
-                    justify-content: center;
-                    background: var(--glass-bg);
-                    color: var(--text-main) !important;
-                    border-radius: 100px;
-                    font-weight: 500;
-                    font-size: 1rem;
-                    padding: 15px 36px;
-                    text-decoration: none;
-                    transition: all 0.3s ease;
-                    border: 1px solid var(--glass-border);
-                    backdrop-filter: blur(20px);
-                    -webkit-backdrop-filter: blur(20px);
+                .btn-secondary .icon-file {
+                    color: var(--text-muted);
+                    transition: color 0.2s ease;
                 }
 
-                .btn-premium-secondary:hover {
-                    background: rgba(255, 255, 255, 0.08);
-                    border-color: rgba(255, 255, 255, 0.2);
-                    transform: translateY(-2px);
-                    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+                .btn-secondary:hover {
+                    background: rgba(255, 255, 255, 0.04);
+                    border-color: rgba(255, 255, 255, 0.3);
                 }
 
-                /* Scroll Indicator */
-                .scroll-indicator-wrapper {
-                    position: absolute;
-                    bottom: 2rem;
-                    left: 50%;
-                    transform: translateX(-50%);
-                    z-index: 10;
-                }
+                .btn-secondary:hover .icon-file { color: var(--text-main); }
 
-                .mouse-shape {
-                    width: 24px;
-                    height: 38px;
-                    border: 2px solid rgba(255, 255, 255, 0.2);
-                    border-radius: 20px;
-                    display: flex;
-                    justify-content: center;
-                    padding-top: 6px;
-                }
-
-                .mouse-wheel {
-                    width: 4px;
-                    height: 8px;
-                    background: var(--secondary);
-                    border-radius: 4px;
-                    animation: scroll 1.5s infinite;
-                }
-
-                /* Keyframes */
                 @keyframes pulse {
                     0%, 100% { opacity: 1; transform: scale(1); }
                     50% { opacity: 0.5; transform: scale(0.8); }
                 }
 
-                @keyframes scroll {
-                    0% { transform: translateY(0); opacity: 1; }
-                    100% { transform: translateY(12px); opacity: 0; }
+                @keyframes blink {
+                    0%, 100% { opacity: 1; }
+                    50% { opacity: 0; }
                 }
 
-                /* Flawless Mobile Responsiveness */
-                @media (max-width: 992px) {
-                    .orb-1 { top: 15%; left: 5%; }
-                    .orb-2 { top: 70%; right: 5%; }
-                    .orb-3 { display: none; }
-                }
-
+                /* Mobile Flawless Responsiveness */
+                /* Mobile Flawless Responsiveness */
                 @media (max-width: 768px) {
                     .hero-section {
-                        padding: 130px 0 80px 0; 
+                        /* Pushes content below the navbar */
+                        padding-top: 130px; 
+                        padding-bottom: 60px;
+                        /* REMOVE 100vh so it wraps natively around your content */
+                        min-height: auto; 
+                        /* Aligns content near the top instead of dead-centering it */
+                        align-items: flex-start; 
                     }
                     
-                    .hide-on-mobile {
-                        display: none !important;
+                    .hero-vignette {
+                        background: linear-gradient(180deg, rgba(5,5,10,0.95) 0%, rgba(5,5,10,0.7) 60%, transparent 100%);
+                    }
+                    
+                    .hero-content-wrapper { 
+                        padding: 0 1.25rem; 
                     }
 
-                    .hero-badge-wrapper {
-                        margin-bottom: 1.5rem;
-                    }
-                    
-                    .hero-content-wrapper {
-                        padding: 0 1.5rem; /* Slight reduction for smaller screens */
+                    /* Bump up role title slightly */
+                    .hero-role-static {
+                        font-size: 1.05rem;
+                        margin-bottom: 0.75rem;
                     }
 
-                    .hero-buttons-container {
-                        flex-direction: column;
-                        width: 100%;
-                        padding: 0;
-                        gap: 1rem;
+                    /* Taller wrapper to fit the increased headline size */
+                    .typing-headline-wrapper {
+                        min-height: 100px; 
+                        margin-bottom: 1rem;
+                    }
+
+                    /* Increased headline font size for better mobile presence */
+                    .hero-title-typing {
+                        font-size: clamp(2.5rem, 9vw, 3.2rem); 
+                    }
+
+                    /* Slightly larger subtitle text */
+                    .hero-subtitle {
+                        font-size: 1rem;
+                        margin-bottom: 2rem;
+                    }
+
+                    .hero-buttons {
+                        flex-direction: row;
+                        justify-content: space-between;
+                        gap: 12px;
                     }
                     
-                    .btn-simple-primary, .btn-premium-secondary {
-                        width: 100%;
-                        padding: 16px 24px;
+                    .btn-primary, .btn-secondary {
+                        /* Taller padding for a better touch target */
+                        padding: 16px 8px; 
+                        /* Increased button text size */
+                        font-size: 0.95rem; 
+                        white-space: nowrap; 
+                        flex: 1; 
                     }
                 }
             `}</style>
