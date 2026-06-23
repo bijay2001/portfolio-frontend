@@ -1,12 +1,72 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, FileText, Code2 } from 'lucide-react';
+import { ArrowRight, User } from 'lucide-react';
 import api from '../api/axiosClient';
 
-// Import your new LightRays component instead of SideRays
+// Import your animation components
 import LightRays from '../animations/LightRays';
 import TextType from '../animations/TextType';
 
+/* --- Windows Terminal Sub-Component --- */
+const WindowsTerminal = () => {
+    const [lines, setLines] = useState([]);
+    
+    // The simulated boot-up sequence
+    const terminalSteps = [
+        { text: "C:\\Users\\Bijay> npm start", delay: 500, color: "#ffffff" },
+        { text: "> bijay-portfolio@1.0.0 start", delay: 1200, color: "#8B949E" },
+        { text: "> node server.js", delay: 1400, color: "#8B949E" },
+        { text: "[INFO] Booting rendering engine...", delay: 1800, color: "#06B6D4" },
+        { text: "[INFO] Initializing React/Node.js stack...", delay: 2200, color: "#06B6D4" },
+        { text: "[INFO] Establishing MySQL connection...", delay: 2700, color: "#A855F7" },
+        { text: "[ OK ] Database connected successfully.", delay: 3200, color: "#10B981" },
+        { text: "[INFO] Fetching dynamic profile data...", delay: 3500, color: "#06B6D4" },
+        { text: "[ OK ] 200 OK - Data retrieved.", delay: 4000, color: "#10B981" },
+        { text: "Server is actively running on port 5173...", delay: 4400, color: "#ffffff" },
+        { text: "C:\\Users\\Bijay> ", delay: 4800, color: "#ffffff", isCursor: true }
+    ];
+
+    useEffect(() => {
+        const timeouts = [];
+        terminalSteps.forEach((step) => {
+            const timeout = setTimeout(() => {
+                setLines(prev => [...prev, step]);
+            }, step.delay);
+            timeouts.push(timeout);
+        });
+
+        return () => timeouts.forEach(clearTimeout);
+    }, []);
+
+    return (
+        <div className="windows-terminal">
+            {/* Terminal Title Bar */}
+            <div className="terminal-header">
+                <div className="terminal-title">
+                    <span className="cmd-icon">C:\_</span>
+                    Command Prompt - node server.js
+                </div>
+                <div className="terminal-controls">
+                    <span className="control minimize">_</span>
+                    <span className="control maximize">□</span>
+                    <span className="control close">×</span>
+                </div>
+            </div>
+            
+            {/* Terminal Body */}
+            <div className="terminal-body">
+                {lines.map((line, index) => (
+                    <div key={index} className="terminal-line" style={{ color: line.color }}>
+                        {line.text}
+                        {line.isCursor && <span className="terminal-cursor"></span>}
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+};
+
+/* --- Main Hero Component --- */
 const Hero = () => {
     const [profile, setProfile] = useState(null);
 
@@ -24,7 +84,7 @@ const Hero = () => {
         fetchProfile();
     }, []);
 
-    const roleTitle = profile?.title || "Full Stack Developer | React, Node, PHP & MySQL";
+    const roleTitle = profile?.title || "Full Stack Developer | React, Node, MySQL & PHP";
     const headlineText = "Building systems from the ground up.";
 
     // Smooth entry animations
@@ -70,65 +130,95 @@ const Hero = () => {
             {/* Vignette: Transparent at the top-center, dark at the bottom and sides */}
             <div className="hero-vignette"></div>
 
-            <div className="hero-content-wrapper">
-                <motion.div 
-                    variants={containerVariants} 
-                    initial="hidden" 
-                    animate="visible"
-                    className="hero-content-left"
-                >
+            <div className="hero-content-wrapper container">
+                <div className="row align-items-center g-5">
                     
-                    {/* Glowing Tech Badge */}
-                    <motion.div variants={fadeUpVariants} className="badge-container">
-                        <div className="status-badge">
-                            <span className="badge-glow-dot"></span>
-                            <Code2 size={13} className="icon-cyan" />
-                            <span className="badge-text">Available for Hire</span>
-                            <div className="badge-border-gradient"></div>
-                        </div>
-                    </motion.div>
+                    {/* Left Column: Typography & CTA */}
+                    <div className="col-12 col-lg-6">
+                        <motion.div 
+                            variants={containerVariants} 
+                            initial="hidden" 
+                            whileInView="visible"
+                            viewport={{ once: true }}
+                            className="hero-content-left"
+                        >
+                            {/* Static, Sleek Role Title */}
+                            <motion.h3 variants={fadeUpVariants} className="hero-role-static">
+                                {roleTitle}
+                            </motion.h3>
 
-                    {/* Static, Sleek Role Title */}
-                    <motion.h3 variants={fadeUpVariants} className="hero-role-static">
-                        {roleTitle}
-                    </motion.h3>
+                            {/* Main Headline with Typing Effect */}
+                            <motion.div variants={fadeUpVariants} className="typing-headline-wrapper">
+                                <TextType 
+                                    text={headlineText}
+                                    as="h1"
+                                    typingSpeed={40}
+                                    deletingSpeed={20}
+                                    loop={false}
+                                    className="hero-title-typing"
+                                    cursorClassName="hero-cursor"
+                                />
+                            </motion.div>
 
-                    {/* Main Headline with Typing Effect */}
-                    <motion.div variants={fadeUpVariants} className="typing-headline-wrapper">
-                        <TextType 
-                            text={headlineText}
-                            as="h1"
-                            typingSpeed={40}
-                            deletingSpeed={20}
-                            loop={false}
-                            className="hero-title-typing"
-                            cursorClassName="hero-cursor"
-                        />
-                    </motion.div>
+                            {/* Authentic, ATS-Friendly Subtitle */}
+                            <motion.p variants={fadeUpVariants} className="hero-subtitle">
+                                Focused on the logic behind the code, I build dynamic web applications using <strong>React.js</strong>, <strong>Node.js</strong>, <strong>PHP</strong>, and <strong>MySQL</strong>. I engineer practical, real-world solutions—ranging from complex government portals to custom management systems.
+                            </motion.p>
 
-                    {/* Authentic, ATS-Friendly Subtitle */}
-                    <motion.p variants={fadeUpVariants} className="hero-subtitle">
-                        Focused on the logic behind the code, I build dynamic web applications using <strong>React.js</strong>, <strong>Node.js</strong>, <strong>PHP</strong>, and <strong>MySQL</strong>. I engineer practical, real-world solutions—ranging from complex government portals to custom management systems.
-                    </motion.p>
+                            {/* Side-by-Side CTA Buttons */}
+                            <motion.div variants={fadeUpVariants} className="hero-buttons">
+                                <a href="#projects" className="btn-primary">
+                                    View Projects
+                                    <ArrowRight size={16} className="icon-arrow" />
+                                </a>
+                                
+                                {/* Updated Button: About Me */}
+                                {/* Updated Button: GitHub Live Code */}
+<a 
+    href="https://github.com/bijay2001" 
+    target="_blank" 
+    rel="noreferrer" 
+    className="btn-secondary"
+>
+    <svg 
+        xmlns="http://www.w3.org/2000/svg" 
+        width="16" 
+        height="16" 
+        viewBox="0 0 24 24" 
+        fill="none" 
+        stroke="currentColor" 
+        strokeWidth="2" 
+        strokeLinecap="round" 
+        strokeLinejoin="round" 
+        className="icon-github"
+    >
+        <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.02c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A4.8 4.8 0 0 0 8 18v4"></path>
+    </svg>
+    View Live Code
+</a>
+                            </motion.div>
 
-                    {/* Side-by-Side CTA Buttons */}
-                    <motion.div variants={fadeUpVariants} className="hero-buttons">
-                        <a href="#projects" className="btn-primary">
-                            View Projects
-                            <ArrowRight size={16} className="icon-arrow" />
-                        </a>
-                        <a href="#resume" className="btn-secondary">
-                            <FileText size={16} className="icon-file" />
-                            My Resume
-                        </a>
-                    </motion.div>
+                        </motion.div>
+                    </div>
 
-                </motion.div>
+                    {/* Right Column: Windows Terminal Animation */}
+                    <div className="col-12 col-lg-6">
+                        <motion.div
+                            initial={{ opacity: 0, x: 40, filter: 'blur(10px)' }}
+                            whileInView={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.8, delay: 0.4 }}
+                        >
+                            <WindowsTerminal />
+                        </motion.div>
+                    </div>
+
+                </div>
             </div>
 
             {/* --- 100% VANILLA SCOPED CSS --- */}
             <style>{`
-                @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
+                @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=Fira+Code:wght@400;500&display=swap');
 
                 :root {
                     --bg-deep: #05050A;
@@ -172,10 +262,6 @@ const Hero = () => {
                 .hero-content-wrapper {
                     position: relative;
                     z-index: 10;
-                    width: 100%;
-                    max-width: 1200px; 
-                    margin: 0 auto;
-                    padding: 0 5%;
                 }
 
                 .hero-content-left {
@@ -183,62 +269,15 @@ const Hero = () => {
                     flex-direction: column;
                     align-items: flex-start;
                     text-align: left;
-                    max-width: 650px; 
-                }
-
-                /* Badge Styles */
-                .badge-container { margin-bottom: 1.25rem; }
-
-                .status-badge {
-                    position: relative;
-                    display: inline-flex;
-                    align-items: center;
-                    gap: 8px;
-                    padding: 6px 16px;
-                    background: rgba(255, 255, 255, 0.02);
-                    border-radius: 100px;
-                    backdrop-filter: blur(10px);
-                    -webkit-backdrop-filter: blur(10px);
-                    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-                }
-
-                .badge-border-gradient {
-                    position: absolute;
-                    top: 0; left: 0; right: 0; bottom: 0;
-                    border-radius: 100px;
-                    padding: 1px;
-                    background: linear-gradient(90deg, rgba(6,182,212,0.4), rgba(147,51,234,0.4));
-                    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-                    -webkit-mask-composite: xor;
-                    mask-composite: exclude;
-                }
-
-                .badge-glow-dot {
-                    width: 6px;
-                    height: 6px;
-                    background: var(--accent-cyan);
-                    border-radius: 50%;
-                    box-shadow: 0 0 8px var(--accent-cyan);
-                    animation: pulse 2s infinite ease-in-out;
-                }
-
-                .icon-cyan { color: var(--accent-cyan); }
-
-                .badge-text {
-                    font-size: 0.75rem;
-                    letter-spacing: 0.05em;
-                    color: var(--text-main);
-                    font-weight: 500;
-                    text-transform: uppercase;
                 }
 
                 .hero-role-static {
                     font-family: 'Space Grotesk', sans-serif;
                     font-size: clamp(1rem, 1.2vw, 1.15rem);
-                    font-weight: 500;
+                    font-weight: 600;
                     color: var(--accent-cyan);
-                    margin: 0 0 0.5rem 0;
-                    letter-spacing: 0.01em;
+                    margin: 0 0 0.75rem 0;
+                    letter-spacing: 0.02em;
                 }
 
                 /* Main Headline Typing Effect */
@@ -251,8 +290,7 @@ const Hero = () => {
 
                 .hero-title-typing {
                     font-family: 'Space Grotesk', sans-serif;
-                    /* SIZE DECREASED: Sleek, composed typography */
-                    font-size: clamp(2.2rem, 4.5vw, 3.4rem); 
+                    font-size: clamp(2.2rem, 4vw, 3.4rem); 
                     line-height: 1.15;
                     font-weight: 700;
                     color: var(--text-main);
@@ -272,7 +310,6 @@ const Hero = () => {
                     line-height: 1.6;
                     color: var(--text-muted);
                     font-weight: 400;
-                    max-width: 500px;
                     margin: 0 0 2.5rem 0;
                 }
                 
@@ -286,7 +323,6 @@ const Hero = () => {
                     display: flex;
                     align-items: center;
                     gap: 1rem;
-                    width: 100%;
                 }
 
                 .btn-primary, .btn-secondary {
@@ -300,11 +336,13 @@ const Hero = () => {
                     padding: 14px 28px;
                     text-decoration: none;
                     transition: all 0.2s ease;
+                    cursor: pointer;
                 }
 
                 .btn-primary {
                     background: var(--text-main);
                     color: var(--bg-deep);
+                    border: none;
                 }
 
                 .btn-primary .icon-arrow { transition: transform 0.2s ease; }
@@ -323,7 +361,7 @@ const Hero = () => {
                     border: 1px solid rgba(255, 255, 255, 0.15);
                 }
 
-                .btn-secondary .icon-file {
+                .btn-secondary .icon-user {
                     color: var(--text-muted);
                     transition: color 0.2s ease;
                 }
@@ -333,11 +371,81 @@ const Hero = () => {
                     border-color: rgba(255, 255, 255, 0.3);
                 }
 
-                .btn-secondary:hover .icon-file { color: var(--text-main); }
+                .btn-secondary:hover .icon-user { color: var(--text-main); }
 
-                @keyframes pulse {
-                    0%, 100% { opacity: 1; transform: scale(1); }
-                    50% { opacity: 0.5; transform: scale(0.8); }
+                /* =========================================
+                   WINDOWS TERMINAL CSS
+                   ========================================= */
+                .windows-terminal {
+                    background: rgba(12, 12, 12, 0.7);
+                    backdrop-filter: blur(15px);
+                    -webkit-backdrop-filter: blur(15px);
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+                    border-radius: 8px;
+                    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255,255,255,0.05) inset;
+                    overflow: hidden;
+                    width: 100%;
+                    max-width: 550px;
+                    margin: 0 auto;
+                }
+
+                .terminal-header {
+                    background: #1A1B26;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 8px 16px;
+                    border-bottom: 1px solid #2D3748;
+                }
+
+                .terminal-title {
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                    font-size: 0.75rem;
+                    color: #D1D5DB;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                }
+
+                .cmd-icon {
+                    font-weight: 700;
+                    color: #fff;
+                    background: #000;
+                    padding: 0 4px;
+                    border: 1px solid #4B5563;
+                }
+
+                .terminal-controls {
+                    display: flex;
+                    gap: 16px;
+                    color: #9CA3AF;
+                    font-size: 0.85rem;
+                }
+
+                .control { cursor: default; }
+                .control.close:hover { color: #EF4444; }
+                .control:hover { color: #fff; }
+
+                .terminal-body {
+                    padding: 1.25rem;
+                    font-family: 'Fira Code', 'Courier New', Courier, monospace;
+                    font-size: 0.85rem;
+                    line-height: 1.6;
+                    height: 280px;
+                    overflow-y: auto;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 4px;
+                }
+
+                .terminal-cursor {
+                    display: inline-block;
+                    width: 8px;
+                    height: 15px;
+                    background-color: #fff;
+                    vertical-align: text-bottom;
+                    margin-left: 5px;
+                    animation: blink 1s step-end infinite;
                 }
 
                 @keyframes blink {
@@ -345,45 +453,33 @@ const Hero = () => {
                     50% { opacity: 0; }
                 }
 
-                /* Mobile Flawless Responsiveness */
-                /* Mobile Flawless Responsiveness */
-                @media (max-width: 768px) {
+                /* Mobile Responsiveness */
+                @media (max-width: 991px) {
                     .hero-section {
-                        /* Pushes content below the navbar */
                         padding-top: 130px; 
                         padding-bottom: 60px;
-                        /* REMOVE 100vh so it wraps natively around your content */
                         min-height: auto; 
-                        /* Aligns content near the top instead of dead-centering it */
                         align-items: flex-start; 
                     }
                     
                     .hero-vignette {
                         background: linear-gradient(180deg, rgba(5,5,10,0.95) 0%, rgba(5,5,10,0.7) 60%, transparent 100%);
                     }
-                    
-                    .hero-content-wrapper { 
-                        padding: 0 1.25rem; 
-                    }
 
-                    /* Bump up role title slightly */
                     .hero-role-static {
-                        font-size: 1.05rem;
-                        margin-bottom: 0.75rem;
-                    }
-
-                    /* Taller wrapper to fit the increased headline size */
-                    .typing-headline-wrapper {
-                        min-height: 100px; 
+                        font-size: 1rem;
                         margin-bottom: 1rem;
                     }
 
-                    /* Increased headline font size for better mobile presence */
-                    .hero-title-typing {
-                        font-size: clamp(2.5rem, 9vw, 3.2rem); 
+                    .typing-headline-wrapper {
+                        min-height: 85px; 
+                        margin-bottom: 1rem;
                     }
 
-                    /* Slightly larger subtitle text */
+                    .hero-title-typing {
+                        font-size: clamp(2.2rem, 8vw, 3rem); 
+                    }
+
                     .hero-subtitle {
                         font-size: 1rem;
                         margin-bottom: 2rem;
@@ -391,17 +487,32 @@ const Hero = () => {
 
                     .hero-buttons {
                         flex-direction: row;
-                        justify-content: space-between;
-                        gap: 12px;
+                        width: 100%;
                     }
                     
                     .btn-primary, .btn-secondary {
-                        /* Taller padding for a better touch target */
-                        padding: 16px 8px; 
-                        /* Increased button text size */
+                        padding: 14px 8px; 
                         font-size: 0.95rem; 
                         white-space: nowrap; 
                         flex: 1; 
+                    }
+
+                    .windows-terminal {
+                        margin-top: 20px;
+                    }
+
+                    .terminal-body {
+                        height: 220px;
+                        font-size: 0.75rem;
+                    }
+                }
+                
+                @media (max-width: 400px) {
+                    .hero-buttons {
+                        flex-direction: column;
+                    }
+                    .btn-primary, .btn-secondary {
+                        width: 100%;
                     }
                 }
             `}</style>

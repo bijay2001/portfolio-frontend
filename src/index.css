@@ -1,80 +1,99 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+/* ==========================================================================
+   GLOBAL VARIABLES & THEME
+   ========================================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Sora:wght@400;600;700;800&display=swap');
 
-/* =========================================
-   1. ROOT VARIABLES
-========================================= */
 :root {
-  --bg-dark: #07090f; 
-  --glass-bg: rgba(255, 255, 255, 0.02);
-  --glass-border: rgba(255, 255, 255, 0.05);
-  --neon-cyan: #00DBE0;
-  --neon-purple: #7B61FF;
-  --neon-pink: #ec4899;
-  --text-main: #f8fafc;
-  --text-muted: #94a3b8;
+    /* Color Palette */
+    --bg-deep: #050812;      /* Deep dark background for the whole app */
+    --card-bg: #0C101A;      /* Slightly lighter background for bento cards */
+    --primary: #7C3AED;      /* Neon Purple */
+    --secondary: #06B6D4;    /* Neon Cyan */
+    --accent: #EC4899;       /* Neon Pink */
+    
+    /* Text Colors */
+    --text-main: #FFFFFF;
+    --text-muted: #9CA3AF;
+    
+    /* Glassmorphism Borders */
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-bg: rgba(255, 255, 255, 0.03);
+
+    /* --- SPACING SYSTEM --- */
+    --section-padding-y: 120px; /* Top and bottom padding for every section */
+    --section-gap: 40px;        /* Gap between sections */
 }
 
-/* =========================================
-   2. GLOBAL RESET & AMBIENT BACKGROUND
-========================================= */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+/* ==========================================================================
+   CSS RESETS & BASE STYLES
+   ========================================================================== */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth; /* Enables smooth scrolling for navbar anchor links */
+    overflow-x: hidden;
 }
 
 body {
-  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-  background-color: var(--bg-dark);
-  background-image: radial-gradient(circle at 15% 50%, rgba(123, 97, 255, 0.08), transparent 25%),
-                    radial-gradient(circle at 85% 30%, rgba(0, 219, 224, 0.08), transparent 25%);
-  color: var(--text-main);
-  overflow-x: hidden;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  scroll-behavior: smooth;
-  line-height: 1.6; 
+    background-color: var(--bg-deep);
+    color: var(--text-main);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
 }
 
-#root {
-  width: 100%;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+/* ==========================================================================
+   GLOBAL SECTION SPACING UTILITIES
+   (Apply to the root <section> of About, Skills, Experience, etc.)
+   ========================================================================== */
+section {
+    padding-top: var(--section-padding-y);
+    padding-bottom: var(--section-padding-y);
+    position: relative;
 }
 
-/* =========================================
-   3. SCROLLBAR
-========================================= */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: var(--bg-dark); }
-::-webkit-scrollbar-thumb { 
-  background: rgba(123, 97, 255, 0.3); 
-  border-radius: 10px; 
+/* Reduce padding slightly on mobile devices for a better viewing experience */
+@media (max-width: 768px) {
+    :root {
+        --section-padding-y: 80px;
+        --section-gap: 20px;
+    }
 }
-::-webkit-scrollbar-thumb:hover { background: var(--neon-cyan); }
 
-/* =========================================
-   4. GLOBAL TYPOGRAPHY UTILITIES
-========================================= */
+/* ==========================================================================
+   CUSTOM PREMIUM SCROLLBAR
+   ========================================================================== */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-deep);
+}
+
+::-webkit-scrollbar-thumb {
+    background: #1F2937;
+    border-radius: 10px;
+    border: 2px solid var(--bg-deep);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary);
+}
+
+/* ==========================================================================
+   TYPOGRAPHY UTILITIES
+   ========================================================================== */
 h1, h2, h3, h4, h5, h6 {
-  letter-spacing: -0.02em; 
-  line-height: 1.2;
+    font-family: 'Sora', sans-serif;
 }
 
-p { color: var(--text-muted); }
-
-/* Kept these because they are useful global text utilities */
-.text-gradient {
-  background: linear-gradient(135deg, var(--neon-cyan) 0%, var(--neon-purple) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  display: inline-block;
-}
-
-.text-gradient-primary {
-  background: linear-gradient(135deg, var(--neon-purple) 0%, var(--neon-pink) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  display: inline-block;
+a {
+    text-decoration: none;
+    color: inherit;
 }
