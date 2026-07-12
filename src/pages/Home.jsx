@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 // Component Imports
+import Navbar from '../components/Navbar';
 import Hero from '../components/Hero';
 import About from '../components/About';
 import Skills from '../components/Skills';
@@ -34,6 +35,7 @@ const Home = () => {
 
     return (
         <main className="portfolio-main">
+            <Navbar />
             {/* Hero is usually the first thing seen, so it renders immediately without the scroll wrapper */}
             <div className="hero-wrapper">
                 <Hero />

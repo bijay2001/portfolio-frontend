@@ -1,14 +1,21 @@
+// frontend/src/App.jsx
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import AppRoutes from './routes/AppRoutes';
-import Navbar from './components/Navbar'; // 1. Import your new Navbar here!
+import { Toaster } from 'sonner'; // Import Sonner
 
 function App() {
   return (
     <BrowserRouter>
-       {/* 2. Place it here so it renders on every page */}
-       <Navbar /> 
-       
+       {/* Global Toaster Configuration for Dynamic Island Look */}
+       <Toaster 
+          position="top-center" 
+          richColors 
+          theme="dark" 
+          toastOptions={{
+             style: { borderRadius: '100px', padding: '12px 20px' }
+          }} 
+       />
        <AppRoutes />
     </BrowserRouter>
   );
