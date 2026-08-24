@@ -7,11 +7,12 @@ import {
     Rocket, 
     Download, 
     Send, 
-    CheckCircle2, 
     Code2, 
     Database, 
     Layout, 
-    Server 
+    Server,
+    Sparkles,
+    CheckCircle2
 } from 'lucide-react';
 import api from '../api/axiosClient';
 
@@ -20,23 +21,17 @@ const About = () => {
 
     useEffect(() => {
         const fetchAboutData = async () => {
-            console.log("1. Starting About API Call..."); // Debug Step 1
             try {
                 const res = await api.get('/profile');
-                console.log("2. Success! Fetched About Data:", res.data); // Debug Step 2
-                
                 if (res.data && res.data.status === 'success') {
                     setData(res.data);
                 }
             } catch (err) {
-                console.error("3. Error fetching about data. Falling back to mock data.", err); // Debug Step 3
-                
-                // MOCK DATA: Used as fallback if API is not running
+                console.error("Error fetching about data. Falling back to mock data.", err);
+                // MOCK DATA: Used as fallback
                 setData({
                     profile: {
-                        summary: "I build reliable, scalable, and efficient web applications that solve real-world problems. Passionate about clean code, performance, and great user experiences.",
-                        // Add fallback mock URLs here for testing
-                        profile_image: "/assets/img/my-profile.jpg", 
+                        summary: "I build reliable, scalable, and efficient web applications that solve real-world problems. Passionate about clean code, performance, and crafting exceptional user experiences from the server to the browser.",
                         resume_url: "/assets/docs/Bijay_Resume.pdf"
                     },
                     education: [
@@ -51,554 +46,538 @@ const About = () => {
         fetchAboutData();
     }, []);
 
-    // --- DYNAMIC URL LOGIC (Same as your Certifications page) ---
+    // --- DYNAMIC URL LOGIC ---
     const baseUrl = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace('/api', '');
     
     const getFileUrl = (path) => {
         if (!path) return '';
         if (path.startsWith('http')) return path;
-        
-        // Remove leading dots and slashes (e.g., "./assets" becomes "assets")
         let cleanPath = path.replace(/^\.?\//, ""); 
         return `${baseUrl}/${cleanPath}`;
     };
 
-    // 1. Format Profile Image URL
-    const rawImg = data.profile?.profile_image || data.profile?.image_url;
-    const profileImageUrl = rawImg 
-        ? getFileUrl(rawImg) 
-        : "https://ui-avatars.com/api/?name=Bijay+Developer&background=0D8ABC&color=fff"; // Ultimate fallback avatar
-
-    // 2. Format Resume URL
     const rawResume = data.profile?.resume_url || data.profile?.resume;
-    const resumeDownloadUrl = rawResume ? getFileUrl(rawResume) : "#"; // Fallback if no resume
-
-    // 3. Format Summary Text
+    const resumeDownloadUrl = rawResume ? getFileUrl(rawResume) : "#";
     const summaryText = data.profile?.summary || "I build reliable, scalable, and efficient web applications that solve real-world problems. Passionate about clean code, performance, and great user experiences.";
 
-    // Framer Motion Variants
+    // Advanced Spring Animations
     const containerVariants = {
         hidden: { opacity: 0 },
         visible: { 
             opacity: 1, 
-            transition: { staggerChildren: 0.15 } 
+            transition: { staggerChildren: 0.1, delayChildren: 0.1 } 
         }
     };
 
-    const cardVariants = {
-        hidden: { opacity: 0, y: 40, filter: 'blur(10px)' },
+    const itemVariants = {
+        hidden: { opacity: 0, y: 20 },
         visible: { 
             opacity: 1, 
             y: 0, 
-            filter: 'blur(0px)',
-            transition: { type: "spring", stiffness: 80, damping: 20 } 
+            transition: { type: "spring", stiffness: 90, damping: 20 } 
         }
     };
 
     return (
-        <section id="about" className="about-section pt-5 pb-5">
-            <div className="container overflow-hidden">
+        <section id="about" className="about-section">
+            <div className="about-container">
                 
                 {/* Section Header */}
                 <motion.div 
-                    initial={{ opacity: 0, y: 30 }} 
+                    initial={{ opacity: 0, y: 20 }} 
                     whileInView={{ opacity: 1, y: 0 }} 
-                    viewport={{ once: true, margin: "-100px" }} 
-                    transition={{ duration: 0.6 }}
-                    className="text-center mb-5"
+                    viewport={{ once: true, margin: "-50px" }} 
+                    transition={{ duration: 0.6, ease: "easeOut" }}
+                    className="section-header-wrapper"
                 >
-                    <h2 className="section-title text-white mb-3">
-                        About <span className="text-gradient">Me</span>
+                    <div className="eyebrow-badge">
+                        <Sparkles size={16} className="eyebrow-icon" />
+                        <span>Get to know me</span>
+                    </div>
+                    <h2 className="section-title">
+                        Behind the <span className="text-gradient">Code.</span>
                     </h2>
-                    <p className="section-subtitle">The engineer behind the code.</p>
                 </motion.div>
 
+                {/* Custom CSS Grid (Fixes the empty space issue!) */}
                 <motion.div 
-                    className="row g-4 justify-content-center"
+                    className="about-bento-grid"
                     variants={containerVariants}
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true, margin: "-50px" }}
                 >
-                    {/* Bento Card 1: Profile Summary & Stats */}
-                    <motion.div variants={cardVariants} className="col-lg-7">
-                        <div className="premium-bento-card h-100 d-flex flex-column">
-                            <div className="card-glow-effect"></div>
+                    {/* LEFT COLUMN: Bio, Skills, Stats, Actions */}
+                    <div className="bento-col-main">
+                        
+                        {/* Bio & Stack Card */}
+                        <motion.div variants={itemVariants} className="bento-card bio-card">
+                            <h3 className="card-title">Full Stack Developer</h3>
+                            <p className="summary-text">
+                                {summaryText}
+                            </p>
                             
-                            {/* Profile Top Section: Image + Info */}
-                            <div className="d-flex flex-column flex-md-row gap-4 mb-4 position-relative z-2">
-                                
-                                {/* DYNAMIC Profile Image with Status Badge */}
-                                <div className="profile-image-container flex-shrink-0 mx-auto mx-md-0">
-                                    <div className="profile-image-ring">
-                                        <img src={profileImageUrl} alt="Profile" className="profile-img" />
+                            <div className="stack-container">
+                                <h4 className="micro-title">Core Stack</h4>
+                                <div className="pill-group">
+                                    <div className="tech-pill">
+                                        <Server size={14} /> <span>Node.js</span>
                                     </div>
-                                    <div className="status-badge">
-                                        <CheckCircle2 size={14} className="text-success-neon" />
-                                        <span>Available</span>
+                                    <div className="tech-pill">
+                                        <Database size={14} /> <span>React.js</span>
                                     </div>
-                                </div>
-
-                                {/* Text & Skills */}
-                                <div className="profile-info text-center text-md-start">
-                                    <h3 className="card-title text-gradient mb-3">Full Stack Developer</h3>
-                                    <p className="summary-text mb-4">
-                                        {summaryText}
-                                    </p>
-                                    
-                                    {/* Skills Pills */}
-                                    <div className="d-flex flex-wrap gap-2 justify-content-center justify-content-md-start">
-                                        <div className="skill-pill">
-                                            <Server size={14} className="text-purple" /> <span>Node.js</span>
-                                        </div>
-                                        <div className="skill-pill">
-                                            <Database size={14} className="text-cyan" /> <span>React.js</span>
-                                        </div>
-                                        <div className="skill-pill">
-                                            <Layout size={14} className="text-secondary" /> <span>MySql</span>
-                                        </div>
-                                        <div className="skill-pill">
-                                            <Code2 size={14} className="text-success" /> <span>PHP</span>
-                                        </div>
+                                    <div className="tech-pill">
+                                        <Layout size={14} /> <span>MySQL</span>
+                                    </div>
+                                    <div className="tech-pill">
+                                        <Code2 size={14} /> <span>PHP</span>
                                     </div>
                                 </div>
                             </div>
+                        </motion.div>
+
+                        {/* Stats Row */}
+                        <motion.div variants={containerVariants} className="stats-grid">
+                            <motion.div variants={itemVariants} className="bento-card stat-card">
+                                <div className="stat-icon-wrapper">
+                                    <Briefcase size={20} />
+                                </div>
+                                <h3 className="stat-number">1.5+</h3>
+                                <span className="stat-label">Years Exp</span>
+                            </motion.div>
                             
-                            {/* SaaS Style Stats Widgets */}
-                            <div className="row g-3 mt-2 position-relative z-2">
-                                <div className="col-12 col-sm-4">
-                                    <div className="stat-widget">
-                                        <Briefcase size={22} className="stat-icon text-purple mb-2 mx-auto" />
-                                        <h3 className="stat-number mb-0">1.5+</h3>
-                                        <span className="stat-label">Years Exp.</span>
-                                    </div>
+                            <motion.div variants={itemVariants} className="bento-card stat-card">
+                                <div className="stat-icon-wrapper">
+                                    <Rocket size={20} />
                                 </div>
-                                <div className="col-12 col-sm-4">
-                                    <div className="stat-widget">
-                                        <Rocket size={22} className="stat-icon text-cyan mb-2 mx-auto" />
-                                        <h3 className="stat-number mb-0">10+</h3>
-                                        <span className="stat-label">Deployments</span>
-                                    </div>
+                                <h3 className="stat-number">10+</h3>
+                                <span className="stat-label">Projects</span>
+                            </motion.div>
+                            
+                            <motion.div variants={itemVariants} className="bento-card stat-card">
+                                <div className="stat-icon-wrapper">
+                                    <Coffee size={20} />
                                 </div>
-                                <div className="col-12 col-sm-4">
-                                    <div className="stat-widget">
-                                        <Coffee size={22} className="stat-icon text-pink mb-2 mx-auto" />
-                                        <h3 className="stat-number mb-0">Daily</h3>
-                                        <span className="stat-label">Coffee Fueled</span>
-                                    </div>
-                                </div>
-                            </div>
+                                <h3 className="stat-number">Daily</h3>
+                                <span className="stat-label">Coffee</span>
+                            </motion.div>
+                        </motion.div>
 
-                            {/* Action Buttons */}
-                            <div className="d-flex flex-column flex-sm-row gap-3 mt-4 pt-4 border-top-subtle position-relative z-2">
-                                {/* DYNAMIC Resume URL */}
-                                <a href={resumeDownloadUrl} download target="_blank" rel="noreferrer" className="btn-gradient flex-grow-1 d-flex justify-content-center align-items-center gap-2">
-                                    <Download size={18} />
-                                    Download Resume
-                                </a>
-                                <a href="#contact" className="btn-outline-glass flex-grow-1 d-flex justify-content-center align-items-center gap-2">
-                                    <Send size={18} />
-                                    Contact Me
-                                </a>
-                            </div>
-                        </div>
-                    </motion.div>
+                        {/* Action Buttons */}
+                        <motion.div variants={itemVariants} className="action-buttons-wrapper">
+                            <a href={resumeDownloadUrl} download target="_blank" rel="noreferrer" className="action-btn btn-primary">
+                                <Download size={18} />
+                                <span>Download Resume</span>
+                            </a>
+                            <a href="#contact" className="action-btn btn-secondary">
+                                <Send size={18} />
+                                <span>Get in Touch</span>
+                            </a>
+                        </motion.div>
 
-                    {/* Bento Card 2: Education Timeline */}
-                    <motion.div variants={cardVariants} className="col-lg-5">
-                        <div className="premium-bento-card h-100">
-                            <div className="card-glow-effect-alt"></div>
+                    </div>
 
-                            <div className="d-flex align-items-center gap-3 mb-4 position-relative z-2">
-                                <div className="icon-box-secondary">
-                                    <GraduationCap size={24} />
+                    {/* RIGHT COLUMN: Education Timeline */}
+                    <div className="bento-col-side">
+                        <motion.div variants={itemVariants} className="bento-card edu-card">
+                            <div className="edu-header">
+                                <div className="icon-surface">
+                                    <GraduationCap size={20} />
                                 </div>
-                                <h3 className="card-title mb-0">Education</h3>
+                                <h3 className="card-title m-0">Education</h3>
                             </div>
                             
-                            <div className="timeline-container position-relative z-2 mt-4">
-                                {/* Gradient Timeline Line */}
-                                <div className="timeline-line"></div>
-                                
+                            <div className="elegant-timeline">
                                 {data.education.map((edu, index) => (
-                                    <motion.div 
-                                        key={index} 
-                                        initial={{ opacity: 0, x: -10 }}
-                                        whileInView={{ opacity: 1, x: 0 }}
-                                        viewport={{ once: true }}
-                                        transition={{ delay: 0.3 + (index * 0.1) }}
-                                        className="timeline-item"
-                                    >
-                                        <div className="timeline-dot"></div>
+                                    <div key={index} className="timeline-node-wrapper">
+                                        <div className="timeline-dot">
+                                            <div className="timeline-dot-inner"></div>
+                                        </div>
                                         <div className="timeline-content">
-                                            <h5 className="timeline-title">{edu.title}</h5>
                                             <div className="timeline-year">{edu.year}</div>
+                                            <h5 className="timeline-edu-title">{edu.title}</h5>
                                             <p className="timeline-inst">{edu.inst}</p>
                                         </div>
-                                    </motion.div>
+                                    </div>
                                 ))}
                             </div>
-                        </div>
-                    </motion.div>
+                        </motion.div>
+                    </div>
+                    
                 </motion.div>
             </div>
             
-            {/* --- PREMIUM SCOPED CSS --- */}
+            {/* --- PREMIUM PRODUCTION CSS --- */}
             <style>{`
-                @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&display=swap');
+                @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
                 :root {
-                    --primary: #7C3AED;
-                    --secondary: #06B6D4;
-                    --accent: #EC4899;
-                    --success-neon: #10B981;
-                    --bg-dark: #0B0E17;
-                    --card-bg: #111524;
-                    --text-main: #FFFFFF;
-                    --text-muted: #9CA3AF;
-                    --glass-bg: rgba(255, 255, 255, 0.03);
-                    --glass-border: rgba(255, 255, 255, 0.08);
+                    --bg-app: #030303;
+                    --bg-card: rgba(15, 15, 17, 0.7);
+                    --bg-card-hover: rgba(20, 20, 22, 0.9);
+                    
+                    --border-light: rgba(255, 255, 255, 0.06);
+                    --border-hover: rgba(255, 255, 255, 0.12);
+                    
+                    --text-primary: #F8F8F8;
+                    --text-secondary: #A1A1AA;
+                    --text-tertiary: #71717A;
+                    
+                    --brand-color: #FFFFFF;
                 }
 
                 .about-section {
-                    background-color: var(--bg-dark);
-                    font-family: 'Sora', sans-serif;
-                    padding-top: 80px; 
-                    padding-bottom: 120px;
+                    background-color: var(--bg-app);
+                    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+                    padding: 120px 0;
+                    color: var(--text-primary);
+                    position: relative;
+                }
+
+                .about-container {
+                    max-width: 1140px;
+                    margin: 0 auto;
+                    padding: 0 24px;
+                }
+
+                /* Header Styling */
+                .section-header-wrapper {
+                    margin-bottom: 60px;
+                }
+
+                .eyebrow-badge {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 8px;
+                    padding: 6px 14px;
+                    background: rgba(255, 255, 255, 0.03);
+                    border: 1px solid var(--border-light);
+                    border-radius: 100px;
+                    font-size: 0.8125rem;
+                    font-weight: 500;
+                    color: var(--text-secondary);
+                    text-transform: uppercase;
+                    letter-spacing: 0.05em;
+                    margin-bottom: 16px;
+                }
+
+                .eyebrow-icon {
+                    color: var(--brand-color);
                 }
 
                 .section-title {
-                    font-size: clamp(2rem, 4vw, 3rem);
-                    font-weight: 800;
+                    font-size: clamp(2.5rem, 5vw, 4rem);
+                    font-weight: 700;
                     letter-spacing: -0.03em;
+                    line-height: 1.1;
+                    margin: 0;
                 }
 
-                .section-title .text-gradient, 
-                .card-title.text-gradient {
-                    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-                    -webkit-background-clip: text;
-                    -webkit-text-fill-color: transparent;
-                    background-clip: text;
+                .text-gradient {
+                    color: var(--text-tertiary);
                 }
 
-                .section-subtitle {
-                    font-size: 1.1rem;
-                    color: var(--text-muted);
-                    font-weight: 400;
+                /* 
+                 * CORE FIX: The Custom Grid 
+                 * This perfectly balances the heights and solves the empty space issue.
+                 */
+                .about-bento-grid {
+                    display: grid;
+                    grid-template-columns: 1fr;
+                    gap: 1.5rem;
                 }
 
-                /* Bento Box Cards */
-                .premium-bento-card {
-                    position: relative;
-                    background: var(--card-bg);
-                    border: 1px solid var(--glass-border);
+                @media (min-width: 992px) {
+                    .about-bento-grid {
+                        grid-template-columns: 1.3fr 0.8fr;
+                        align-items: start; /* PREVENTS the right column from stretching! */
+                    }
+                }
+
+                .bento-col-main {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 1.5rem;
+                }
+
+                .bento-col-side {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 1.5rem;
+                }
+
+                /* Base Card Styling */
+                .bento-card {
+                    background: var(--bg-card);
+                    border: 1px solid var(--border-light);
                     border-radius: 24px;
-                    padding: 2.5rem;
-                    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-                    overflow: hidden;
-                    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+                    padding: 32px;
+                    backdrop-filter: blur(20px);
+                    -webkit-backdrop-filter: blur(20px);
+                    transition: transform 0.3s ease, border-color 0.3s ease, background 0.3s ease;
                 }
 
-                .premium-bento-card:hover {
-                    transform: translateY(-5px);
-                    border-color: rgba(255,255,255,0.15);
-                    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+                .bento-card:hover {
+                    background: var(--bg-card-hover);
+                    border-color: var(--border-hover);
                 }
 
-                /* Subtle Ambient Glows inside cards */
-                .card-glow-effect {
-                    position: absolute;
-                    top: -50px;
-                    left: -50px;
-                    width: 200px;
-                    height: 200px;
-                    background: radial-gradient(circle, rgba(124, 58, 237, 0.15) 0%, transparent 70%);
-                    z-index: 1;
-                    pointer-events: none;
-                }
-
-                .card-glow-effect-alt {
-                    position: absolute;
-                    bottom: -50px;
-                    right: -50px;
-                    width: 200px;
-                    height: 200px;
-                    background: radial-gradient(circle, rgba(6, 182, 212, 0.15) 0%, transparent 70%);
-                    z-index: 1;
-                    pointer-events: none;
-                }
-
-                /* Profile Image & Status */
-                .profile-image-container {
-                    position: relative;
-                    width: 140px;
-                    height: 140px;
-                }
-
-                .profile-image-ring {
-                    width: 100%;
-                    height: 100%;
-                    border-radius: 50%;
-                    padding: 4px;
-                    background: linear-gradient(135deg, var(--primary), var(--secondary));
-                    box-shadow: 0 0 20px rgba(124, 58, 237, 0.3);
-                }
-
-                .profile-img {
-                    width: 100%;
-                    height: 100%;
-                    border-radius: 50%;
-                    object-fit: cover;
-                    background-color: var(--bg-dark);
-                    border: 3px solid var(--card-bg);
-                }
-
-                .status-badge {
-                    position: absolute;
-                    bottom: -10px;
-                    left: 50%;
-                    transform: translateX(-50%);
-                    background: rgba(16, 185, 129, 0.15);
-                    border: 1px solid rgba(16, 185, 129, 0.3);
-                    color: var(--success-neon);
-                    padding: 4px 12px;
-                    border-radius: 20px;
-                    font-size: 0.75rem;
-                    font-weight: 600;
-                    display: flex;
-                    align-items: center;
-                    gap: 6px;
-                    backdrop-filter: blur(8px);
-                    -webkit-backdrop-filter: blur(8px);
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-                    white-space: nowrap;
-                }
-
-                .text-success-neon { color: var(--success-neon); }
-
-                /* Skills Pills */
-                .skill-pill {
-                    display: flex;
-                    align-items: center;
-                    gap: 8px;
-                    background: var(--glass-bg);
-                    border: 1px solid var(--glass-border);
-                    padding: 6px 14px;
-                    border-radius: 12px;
-                    font-size: 0.85rem;
-                    font-weight: 600;
-                    color: var(--text-muted);
-                    transition: all 0.3s ease;
-                }
-                
-                .skill-pill:hover {
-                    background: rgba(255, 255, 255, 0.08);
-                    color: var(--text-main);
-                    border-color: rgba(255, 255, 255, 0.2);
-                }
-
-                /* Text Utilities */
                 .card-title {
                     font-size: 1.5rem;
-                    font-weight: 700;
-                    color: var(--text-main);
+                    font-weight: 600;
                     letter-spacing: -0.02em;
+                    color: var(--text-primary);
+                    margin-top: 0;
+                    margin-bottom: 16px;
                 }
 
                 .summary-text {
-                    font-size: 0.95rem;
-                    color: var(--text-muted);
-                    line-height: 1.7;
+                    font-size: 1.125rem;
+                    color: var(--text-secondary);
+                    line-height: 1.6;
                     font-weight: 400;
+                    margin-bottom: 32px;
                 }
 
-                /* Stats Widgets */
-                .border-top-subtle {
-                    border-top: 1px solid var(--glass-border) !important;
+                /* Stack Styling */
+                .stack-container {
+                    padding-top: 24px;
+                    border-top: 1px solid var(--border-light);
                 }
 
-                .stat-widget {
-                    background: var(--glass-bg);
-                    border: 1px solid var(--glass-border);
-                    border-radius: 16px;
-                    padding: 1.25rem 0.5rem;
-                    text-align: center;
-                    transition: all 0.3s ease;
-                    height: 100%;
+                .micro-title {
+                    font-size: 0.8125rem;
+                    font-weight: 600;
+                    text-transform: uppercase;
+                    letter-spacing: 0.05em;
+                    color: var(--text-tertiary);
+                    margin-bottom: 16px;
+                    margin-top: 0;
+                }
+
+                .pill-group {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 10px;
+                }
+
+                .tech-pill {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 8px;
+                    background: rgba(255, 255, 255, 0.03);
+                    border: 1px solid var(--border-light);
+                    padding: 8px 16px;
+                    border-radius: 12px;
+                    font-size: 0.875rem;
+                    font-weight: 500;
+                    color: var(--text-primary);
+                    transition: all 0.2s ease;
+                }
+
+                .tech-pill:hover {
+                    background: rgba(255, 255, 255, 0.08);
+                    border-color: rgba(255, 255, 255, 0.15);
+                    transform: translateY(-2px);
+                }
+
+                .tech-pill svg {
+                    color: var(--text-secondary);
+                }
+
+                /* Stats Grid */
+                .stats-grid {
+                    display: grid;
+                    grid-template-columns: repeat(3, 1fr);
+                    gap: 1.5rem;
+                }
+
+                @media (max-width: 576px) {
+                    .stats-grid {
+                        grid-template-columns: 1fr;
+                    }
+                }
+
+                .stat-card {
                     display: flex;
                     flex-direction: column;
+                    align-items: center;
                     justify-content: center;
+                    text-align: center;
+                    padding: 24px;
                 }
 
-                .stat-widget:hover {
-                    background: rgba(255,255,255,0.06);
-                    border-color: rgba(255,255,255,0.15);
-                    transform: translateY(-3px);
+                .stat-icon-wrapper {
+                    color: var(--text-secondary);
+                    margin-bottom: 12px;
                 }
-
-                .text-purple { color: #A855F7; }
-                .text-cyan { color: #22D3EE; }
-                .text-pink { color: #F472B6; }
 
                 .stat-number {
-                    font-size: 1.5rem;
-                    font-weight: 800;
-                    color: var(--text-main);
+                    font-size: 2rem;
+                    font-weight: 700;
+                    letter-spacing: -0.02em;
+                    margin: 0 0 4px 0;
+                    color: var(--text-primary);
                 }
 
                 .stat-label {
-                    font-size: 0.75rem;
-                    color: var(--text-muted);
+                    font-size: 0.8125rem;
+                    color: var(--text-tertiary);
+                    font-weight: 500;
                     text-transform: uppercase;
                     letter-spacing: 0.05em;
-                    font-weight: 600;
-                    margin-top: 4px;
                 }
 
-                /* Buttons */
-                .btn-gradient {
-                    background: linear-gradient(135deg, var(--primary) 0%, #4F46E5 100%);
-                    color: white;
-                    border: none;
-                    padding: 12px 24px;
-                    border-radius: 12px;
+                /* Action Buttons */
+                .action-buttons-wrapper {
+                    display: flex;
+                    gap: 1rem;
+                }
+
+                @media (max-width: 576px) {
+                    .action-buttons-wrapper {
+                        flex-direction: column;
+                    }
+                }
+
+                .action-btn {
+                    flex: 1;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 10px;
+                    padding: 16px 24px;
+                    border-radius: 16px;
+                    font-size: 0.9375rem;
                     font-weight: 600;
-                    font-size: 0.95rem;
                     text-decoration: none;
-                    transition: all 0.3s ease;
-                    box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+                    transition: all 0.2s ease;
                 }
 
-                .btn-gradient:hover {
+                .btn-primary {
+                    background: var(--text-primary);
+                    color: var(--bg-app);
+                }
+
+                .btn-primary:hover {
                     transform: translateY(-2px);
-                    box-shadow: 0 6px 20px rgba(124, 58, 237, 0.5);
-                    color: white;
+                    opacity: 0.9;
+                    box-shadow: 0 8px 20px rgba(255, 255, 255, 0.1);
                 }
 
-                .btn-outline-glass {
-                    background: transparent;
-                    color: var(--text-main);
-                    border: 1px solid var(--glass-border);
-                    padding: 12px 24px;
-                    border-radius: 12px;
-                    font-weight: 600;
-                    font-size: 0.95rem;
-                    text-decoration: none;
-                    transition: all 0.3s ease;
+                .btn-secondary {
+                    background: var(--bg-card);
+                    color: var(--text-primary);
+                    border: 1px solid var(--border-light);
                 }
 
-                .btn-outline-glass:hover {
+                .btn-secondary:hover {
                     background: rgba(255, 255, 255, 0.05);
-                    border-color: rgba(255, 255, 255, 0.2);
-                    color: white;
+                    border-color: rgba(255, 255, 255, 0.15);
                     transform: translateY(-2px);
                 }
 
-                /* Timeline Styles */
-                .icon-box-secondary {
+                /* Education Timeline (Right Side) */
+                .edu-header {
+                    display: flex;
+                    align-items: center;
+                    gap: 16px;
+                    margin-bottom: 32px;
+                }
+
+                .icon-surface {
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    width: 48px;
-                    height: 48px;
-                    border-radius: 14px;
-                    background: rgba(6, 182, 212, 0.1);
-                    color: var(--secondary);
-                    border: 1px solid rgba(6, 182, 212, 0.2);
+                    width: 44px;
+                    height: 44px;
+                    background: rgba(255, 255, 255, 0.03);
+                    border: 1px solid var(--border-light);
+                    border-radius: 12px;
+                    color: var(--brand-color);
                 }
 
-                .timeline-container { position: relative; }
+                .elegant-timeline {
+                    position: relative;
+                    padding-left: 20px;
+                }
 
-                .timeline-line {
+                /* Vertical Track Line */
+                .elegant-timeline::before {
+                    content: '';
                     position: absolute;
-                    left: 7px; 
+                    left: 20px;
                     top: 10px;
                     bottom: 10px;
-                    width: 2px;
-                    background: linear-gradient(to bottom, rgba(124, 58, 237, 0.2), rgba(124, 58, 237, 0.6) 20%, rgba(6, 182, 212, 0.6) 80%, rgba(6, 182, 212, 0.1));
-                    z-index: 1;
+                    width: 1px;
+                    background: linear-gradient(to bottom, var(--border-hover) 0%, var(--border-light) 80%, transparent 100%);
                 }
 
-                .timeline-item {
+                .timeline-node-wrapper {
                     position: relative;
-                    padding-left: 36px;
-                    margin-bottom: 1.5rem;
-                    z-index: 2;
+                    padding-left: 28px;
+                    margin-bottom: 32px;
                 }
 
-                .timeline-item:last-child { margin-bottom: 0; }
+                .timeline-node-wrapper:last-child {
+                    margin-bottom: 0;
+                }
 
                 .timeline-dot {
                     position: absolute;
-                    left: 0;
-                    top: 24px; 
-                    transform: translateY(-50%);
-                    width: 16px;
-                    height: 16px;
+                    left: -4px;
+                    top: 6px;
+                    width: 9px;
+                    height: 9px;
                     border-radius: 50%;
-                    background: var(--bg-dark);
-                    border: 2px solid var(--primary);
-                    box-shadow: 0 0 12px rgba(124, 58, 237, 0.4);
-                    transition: all 0.3s ease;
-                    z-index: 3;
+                    background: var(--bg-card);
+                    border: 1px solid var(--text-tertiary);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    transition: border-color 0.3s ease;
                 }
 
-                .timeline-content {
-                    padding: 1.25rem;
-                    border-radius: 16px;
-                    background: var(--glass-bg);
-                    border: 1px solid transparent;
-                    transition: all 0.3s ease;
+                .timeline-node-wrapper:hover .timeline-dot {
+                    border-color: var(--brand-color);
                 }
 
-                .timeline-item:hover .timeline-dot {
-                    background: var(--primary);
-                    box-shadow: 0 0 16px var(--primary);
-                    transform: translateY(-50%) scale(1.2);
+                .timeline-dot-inner {
+                    width: 3px;
+                    height: 3px;
+                    background: var(--text-tertiary);
+                    border-radius: 50%;
+                    transition: background 0.3s ease;
                 }
 
-                .timeline-item:hover .timeline-content {
-                    background: rgba(255, 255, 255, 0.05);
-                    border-color: var(--glass-border);
-                }
-
-                .timeline-title {
-                    font-size: 1.05rem;
-                    font-weight: 700;
-                    color: var(--text-main);
-                    margin-bottom: 0.25rem;
+                .timeline-node-wrapper:hover .timeline-dot-inner {
+                    background: var(--brand-color);
                 }
 
                 .timeline-year {
-                    font-size: 0.85rem;
+                    font-size: 0.8125rem;
+                    font-weight: 500;
+                    color: var(--text-tertiary);
+                    margin-bottom: 6px;
+                }
+
+                .timeline-edu-title {
+                    font-size: 1.0625rem;
                     font-weight: 600;
-                    color: var(--secondary);
-                    margin-bottom: 0.5rem;
+                    color: var(--text-primary);
+                    margin: 0 0 6px 0;
+                    line-height: 1.4;
                 }
 
                 .timeline-inst {
-                    font-size: 0.9rem;
-                    color: var(--text-muted);
-                    margin-bottom: 0;
+                    font-size: 0.9375rem;
+                    color: var(--text-secondary);
+                    margin: 0;
                     line-height: 1.5;
                 }
 
-                /* Mobile Adjustments */
-                @media (max-width: 768px) {
-                    .premium-bento-card { padding: 1.5rem; }
-                    
-                    .profile-image-container {
-                        width: 120px;
-                        height: 120px;
-                    }
-
-                    .stat-widget { padding: 1rem 0.25rem; }
-                    .stat-number { font-size: 1.25rem; }
-                    .stat-label { font-size: 0.65rem; }
-                    
-                    .timeline-content { padding: 1rem; }
-                    .timeline-dot { top: 20px; }
-                }
+                /* Global Utility */
+                .m-0 { margin: 0; }
             `}</style>
         </section>
     );

@@ -20,8 +20,7 @@
     --glass-bg: rgba(255, 255, 255, 0.03);
 
     /* --- SPACING SYSTEM --- */
-    --section-padding-y: 120px; /* Top and bottom padding for every section */
-    --section-gap: 40px;        /* Gap between sections */
+    --section-padding-y: 20px; /* Top and bottom padding for every section */
 }
 
 /* ==========================================================================

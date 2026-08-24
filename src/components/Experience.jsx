@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Briefcase, MapPin, Calendar, CheckCircle2, Award } from 'lucide-react';
+import { MapPin, Building, Calendar, ArrowRight } from 'lucide-react';
 import api from '../api/axiosClient';
 
 const Experience = () => {
-    // Fallback data from your resume ensures UI perfection even while API loads
     const [experience, setExperience] = useState([
         {
             role: "Junior Software Developer",
@@ -37,499 +36,553 @@ const Experience = () => {
                     setExperience(res.data.data);
                 }
             } catch (error) {
-                console.error("Error fetching experience:", error);
+                console.error("Experience data fetch failed, using fallback:", error);
             }
         };
         fetchExperience();
     }, []);
 
-    // Framer Motion Variants
+    // Animation Configurations
     const containerVariants = {
         hidden: { opacity: 0 },
-        visible: { 
-            opacity: 1, 
-            transition: { staggerChildren: 0.15 } 
+        visible: {
+            opacity: 1,
+            transition: { staggerChildren: 0.2, delayChildren: 0.1 }
         }
     };
 
-    const cardVariants = {
-        hidden: { opacity: 0, x: -30, filter: 'blur(8px)' },
+    const itemVariants = {
+        hidden: { opacity: 0, y: 20 },
+        visible: {
+            opacity: 1,
+            y: 0,
+            transition: { type: "spring", stiffness: 100, damping: 20 }
+        }
+    };
+
+    const lineVariants = {
+        hidden: { height: 0 },
         visible: { 
-            opacity: 1, 
-            x: 0, 
-            filter: 'blur(0px)',
-            transition: { type: "spring", stiffness: 80, damping: 20 } 
+            height: "100%", 
+            transition: { duration: 1.5, ease: "easeInOut" } 
         }
     };
 
     return (
-        <section id="experience" className="experience-section">
-            
-            {/* Ambient Background Glows */}
-            <div className="experience-bg-grid"></div>
-            <div className="experience-glow-blob"></div>
-
-            <div className="experience-content-wrapper">
+        <section id="experience" className="section-experience">
+            <div className="experience-container">
                 
-                {/* Section Header */}
+                {/* Premium Header Composition */}
                 <motion.div 
-                    initial={{ opacity: 0, y: 30 }} 
-                    whileInView={{ opacity: 1, y: 0 }} 
-                    viewport={{ once: true, margin: "-100px" }} 
-                    transition={{ duration: 0.6 }}
-                    className="experience-header"
+                    className="section-header"
+                    initial={{ opacity: 0, y: 15 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-100px" }}
+                    transition={{ duration: 0.6, ease: "easeOut" }}
                 >
-                    <h2 className="section-title">
-                        Work <span className="text-gradient">Experience</span>
-                    </h2>
-                    <p className="section-subtitle">My professional path and technical achievements.</p>
+                    <span className="section-eyebrow">Career Path</span>
+                    <h2 className="section-title">Professional Experience</h2>
+                    <p className="section-description">
+                        A timeline of my professional journey, technical contributions, and career growth.
+                    </p>
                 </motion.div>
 
-                {/* Flawless CSS Timeline Layout */}
+                {/* Editorial Timeline Layout */}
                 <motion.div 
-                    className="timeline-wrapper"
+                    className="timeline-layout"
                     variants={containerVariants}
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true, margin: "-50px" }}
                 >
-                    {/* The glowing vertical timeline line */}
-                    <div className="timeline-track"></div>
+                    {/* The Track Line */}
+                    <div className="timeline-track-container">
+                        <motion.div variants={lineVariants} className="timeline-track-line"></motion.div>
+                    </div>
 
-                    {experience.map((job, index) => (
-                        <motion.div key={index} variants={cardVariants} className="timeline-item">
-                            
-                            {/* Glowing Timeline Node */}
-                            <div className="timeline-node">
-                                <div className="node-inner"></div>
-                            </div>
-
-                            {/* Premium Bento Card */}
-                            <div className="premium-bento-card timeline-card">
-                                <div className="card-ambient-glow"></div>
+                    {experience.map((job, index) => {
+                        const isCurrent = job.duration.toLowerCase().includes('present');
+                        
+                        return (
+                            <motion.div key={index} variants={itemVariants} className="timeline-row">
                                 
-                                <div className="card-content position-relative z-2">
-                                    
-                                    {/* Header: Stacks perfectly on mobile, flexes on desktop */}
-                                    <div className="job-header">
-                                        <div className="job-title-group">
-                                            <h4 className="job-role">{job.role}</h4>
-                                            <div className="job-meta">
-                                                <span className="meta-tag">
-                                                    <Briefcase size={14} className="meta-icon" /> 
-                                                    {job.company}
-                                                </span>
-                                                <span className="meta-tag">
-                                                    <MapPin size={14} className="meta-icon" /> 
-                                                    {job.location}
-                                                </span>
+                                {/* Desktop Date Column */}
+                                <div className="timeline-date-col">
+                                    <span className={`date-text ${isCurrent ? 'date-active' : ''}`}>
+                                        {job.duration}
+                                    </span>
+                                </div>
+
+                                {/* Timeline Node */}
+                                <div className="timeline-node-col">
+                                    <div className={`timeline-node ${isCurrent ? 'node-active' : ''}`}>
+                                        {isCurrent && <div className="node-pulse"></div>}
+                                    </div>
+                                </div>
+
+                                {/* Content Card Column */}
+                                <div className="timeline-content-col">
+                                    <div className={`experience-card ${isCurrent ? 'card-active' : ''}`}>
+                                        
+                                        <div className="card-header">
+                                            {/* Mobile Date (Hidden on Desktop) */}
+                                            <div className="mobile-date">
+                                                <Calendar size={14} />
+                                                <span>{job.duration}</span>
+                                            </div>
+
+                                            <div className="title-wrapper">
+                                                <h3 className="job-title">{job.role}</h3>
+                                                {isCurrent && (
+                                                    <span className="current-badge">
+                                                        <span className="dot"></span> Current
+                                                    </span>
+                                                )}
+                                            </div>
+                                            
+                                            <div className="job-metadata">
+                                                <div className="meta-item">
+                                                    <Building size={16} className="meta-icon" />
+                                                    <span>{job.company}</span>
+                                                </div>
+                                                <span className="meta-divider">•</span>
+                                                <div className="meta-item">
+                                                    <MapPin size={16} className="meta-icon" />
+                                                    <span>{job.location}</span>
+                                                </div>
                                             </div>
                                         </div>
-                                        
-                                        <div className="job-duration">
-                                            <Calendar size={14} className="text-secondary-cyan" /> 
-                                            <span>{job.duration}</span>
+
+                                        <div className="card-body">
+                                            <ul className="achievement-list">
+                                                {job.description.split('||').map((point, i) => {
+                                                    if (!point.trim()) return null;
+                                                    return (
+                                                        <li key={i} className="achievement-item">
+                                                            <ArrowRight size={14} className="achievement-icon" />
+                                                            <span className="achievement-text">{point.trim()}</span>
+                                                        </li>
+                                                    );
+                                                })}
+                                            </ul>
                                         </div>
                                     </div>
-
-                                    <div className="card-divider"></div>
-                                    
-                                    {/* Custom Checklist Description */}
-                                    <div className="job-description">
-                                        {job.description.split('||').map((point, i) => {
-                                            if (!point.trim()) return null;
-                                            return (
-                                                <div key={i} className="desc-bullet-group">
-                                                    <div className="bullet-icon-wrapper">
-                                                        <CheckCircle2 size={16} className="bullet-icon" />
-                                                    </div>
-                                                    <p className="desc-text">{point.trim()}</p>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-
                                 </div>
-                            </div>
-                        </motion.div>
-                    ))}
+                                
+                            </motion.div>
+                        );
+                    })}
                 </motion.div>
             </div>
 
-            {/* --- PREMIUM SCOPED CSS --- */}
+            {/* --- CSS ARCHITECTURE --- */}
             <style>{`
-                @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+                /* Font import for a clean, structural system font fallback */
+                @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
                 :root {
-                    --primary: #7C3AED;
-                    --secondary: #06B6D4;
-                    --accent: #EC4899;
-                    --bg-dark: #050816;
-                    --text-main: #FFFFFF;
-                    --text-muted: #9CA3AF;
-                    --glass-bg: rgba(255, 255, 255, 0.02);
-                    --glass-border: rgba(255, 255, 255, 0.06);
+                    /* Color System */
+                    --bg-page: #0A0A0B;
+                    --bg-card: #121214;
+                    --bg-card-hover: #18181B;
                     
-                    /* Timeline Math Variables */
-                    --node-size: 24px;
-                    --line-width: 2px;
-                    --timeline-gap: 40px; /* Space between node and card */
+                    --border-subtle: #27272A;
+                    --border-strong: #3F3F46;
+                    
+                    --text-primary: #FAFAFA;
+                    --text-secondary: #A1A1AA;
+                    --text-tertiary: #71717A;
+                    
+                    --accent-primary: #FFFFFF;
+                    --accent-muted: rgba(255, 255, 255, 0.1);
+                    
+                    /* Spacing & Layout */
+                    --max-width: 1100px;
+                    --node-size: 14px;
+                    --track-width: 2px;
                 }
 
-                .experience-section {
+                /* Base Section */
+                .section-experience {
+                    background-color: var(--bg-page);
+                    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+                    padding: 120px 0;
+                    color: var(--text-primary);
                     position: relative;
-                    background-color: var(--bg-dark);
-                    font-family: 'Inter', -apple-system, sans-serif;
-                    padding-top: 100px;
-                    padding-bottom: 120px;
-                    overflow: hidden;
                 }
 
-                /* Ambient Backgrounds */
-                .experience-bg-grid {
-                    position: absolute;
-                    inset: 0;
-                    background-image: 
-                        linear-gradient(to right, rgba(255,255,255,0.015) 1px, transparent 1px),
-                        linear-gradient(to bottom, rgba(255,255,255,0.015) 1px, transparent 1px);
-                    background-size: 50px 50px;
-                    mask-image: radial-gradient(ellipse 80% 100% at 50% 50%, black 0%, transparent 100%);
-                    -webkit-mask-image: radial-gradient(ellipse 80% 100% at 50% 50%, black 0%, transparent 100%);
-                    z-index: 0;
-                }
-
-                .experience-glow-blob {
-                    position: absolute;
-                    top: 20%;
-                    left: -20%;
-                    width: 60vw;
-                    height: 60vw;
-                    background: radial-gradient(circle, rgba(124, 58, 237, 0.04) 0%, transparent 60%);
-                    filter: blur(80px);
-                    z-index: 1;
-                    pointer-events: none;
-                }
-
-                /* Custom Perfect Padding Wrapper */
-                .experience-content-wrapper {
-                    position: relative;
-                    z-index: 10;
-                    width: 100%;
-                    max-width: 1000px; /* Slightly narrower than 1200px for better reading width on timelines */
+                .experience-container {
+                    max-width: var(--max-width);
                     margin: 0 auto;
-                    padding: 0 2rem;
+                    padding: 0 24px;
                 }
 
-                /* Header Alignment */
-                .experience-header {
+                /* Header Composition */
+                .section-header {
+                    text-align: center;
+                    margin-bottom: 80px;
                     display: flex;
                     flex-direction: column;
                     align-items: center;
-                    text-align: center;
-                    margin-bottom: 4rem;
+                    gap: 12px;
                 }
 
-                .section-badge {
-                    display: inline-flex;
-                    align-items: center;
-                    gap: 8px;
-                    padding: 6px 16px;
-                    border-radius: 100px;
-                    background: var(--glass-bg);
-                    border: 1px solid var(--glass-border);
-                    backdrop-filter: blur(12px);
-                    -webkit-backdrop-filter: blur(12px);
-                    margin-bottom: 1rem;
-                }
-
-                .badge-text {
-                    font-size: 0.75rem;
-                    letter-spacing: 0.1em;
-                    color: var(--text-muted);
-                    font-weight: 600;
+                .section-eyebrow {
+                    font-size: 0.8125rem;
                     text-transform: uppercase;
+                    letter-spacing: 0.15em;
+                    font-weight: 600;
+                    color: var(--text-tertiary);
                 }
-
-                .text-secondary-cyan { color: var(--secondary); }
 
                 .section-title {
-                    font-size: clamp(2rem, 4vw, 3rem);
-                    font-weight: 800;
-                    color: var(--text-main);
+                    font-size: clamp(2rem, 5vw, 3rem);
+                    font-weight: 700;
                     letter-spacing: -0.03em;
-                    margin-bottom: 0.5rem;
+                    margin: 0;
+                    color: var(--text-primary);
                 }
 
-                .section-title .text-gradient {
-                    background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 50%, var(--accent) 100%);
-                    -webkit-background-clip: text;
-                    -webkit-text-fill-color: transparent;
-                    background-clip: text;
+                .section-description {
+                    font-size: 1.125rem;
+                    color: var(--text-secondary);
+                    max-width: 500px;
+                    margin: 0;
+                    line-height: 1.6;
                 }
 
-                .section-subtitle {
-                    font-size: 1.1rem;
-                    color: var(--text-muted);
-                    font-weight: 400;
-                }
-
-                /* --- FLAWLESS CSS TIMELINE ARCHITECTURE --- */
-                .timeline-wrapper {
+                /* Layout Architecture */
+                .timeline-layout {
                     position: relative;
                 }
 
-                .timeline-track {
+                /* The Line */
+                .timeline-track-container {
                     position: absolute;
-                    /* Perfectly centers the line inside the node mathematically */
-                    left: calc(var(--node-size) / 2 - var(--line-width) / 2);
-                    top: 10px;
+                    top: 8px;
                     bottom: 0;
-                    width: var(--line-width);
-                    background: linear-gradient(to bottom, transparent, rgba(6, 182, 212, 0.4) 10%, rgba(124, 58, 237, 0.4) 90%, transparent);
-                    z-index: 1;
+                    left: 200px; /* 180px date + 20px gap */
+                    width: var(--track-width);
+                    transform: translateX(-50%);
+                    background: transparent;
                 }
 
-                .timeline-item {
+                .timeline-track-line {
+                    width: 100%;
+                    background: linear-gradient(to bottom, var(--border-strong) 0%, var(--border-subtle) 80%, transparent 100%);
+                    transform-origin: top;
+                }
+
+                /* Individual Row (Grid on Desktop) */
+                .timeline-row {
+                    display: grid;
+                    grid-template-columns: 180px 40px 1fr;
+                    gap: 0;
+                    margin-bottom: 48px;
                     position: relative;
-                    /* Pushes the card exactly enough to clear the node + gap */
-                    padding-left: calc(var(--node-size) + var(--timeline-gap));
-                    margin-bottom: 2.5rem;
-                    z-index: 2;
                 }
 
-                .timeline-item:last-child {
+                .timeline-row:last-child {
                     margin-bottom: 0;
                 }
 
-                .timeline-node {
-                    position: absolute;
-                    left: 0;
-                    /* Aligns node perfectly with the card's header */
-                    top: 32px; 
-                    width: var(--node-size);
-                    height: var(--node-size);
-                    border-radius: 50%;
-                    background: var(--bg-dark);
-                    border: 2px solid rgba(6, 182, 212, 0.5);
-                    box-shadow: 0 0 15px rgba(6, 182, 212, 0.2);
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    transition: all 0.4s ease;
-                    z-index: 3;
+                /* 1. Date Column */
+                .timeline-date-col {
+                    text-align: right;
+                    padding-right: 24px;
+                    padding-top: 4px; /* Align with title text */
                 }
 
-                .node-inner {
-                    width: 8px;
-                    height: 8px;
-                    border-radius: 50%;
-                    background: var(--secondary);
-                    transition: all 0.4s ease;
-                }
-
-                .timeline-item:hover .timeline-node {
-                    border-color: var(--secondary);
-                    box-shadow: 0 0 20px rgba(6, 182, 212, 0.6);
-                    transform: scale(1.1);
-                }
-
-                .timeline-item:hover .node-inner {
-                    background: var(--text-main);
-                    box-shadow: 0 0 10px var(--text-main);
-                }
-
-                /* Bento Card Styling */
-                .premium-bento-card {
-                    position: relative;
-                    background: linear-gradient(145deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.005) 100%);
-                    border: 1px solid var(--glass-border);
-                    border-radius: 24px;
-                    padding: 2rem 2.5rem;
-                    backdrop-filter: blur(20px);
-                    -webkit-backdrop-filter: blur(20px);
-                    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-                    overflow: hidden;
-                    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-                }
-
-                .timeline-item:hover .premium-bento-card {
-                    transform: translateY(-5px);
-                    border-color: rgba(6, 182, 212, 0.2);
-                    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-                }
-
-                .card-ambient-glow {
-                    position: absolute;
-                    top: -50px;
-                    left: -50px;
-                    width: 250px;
-                    height: 250px;
-                    background: radial-gradient(circle, rgba(6, 182, 212, 0.1) 0%, transparent 70%);
-                    z-index: 1;
-                    opacity: 0;
-                    pointer-events: none;
-                    transition: opacity 0.5s ease;
-                }
-
-                .timeline-item:hover .card-ambient-glow {
-                    opacity: 1;
-                }
-
-                /* Job Header Layout */
-                .job-header {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: flex-start;
-                    gap: 1.5rem;
-                    margin-bottom: 1.5rem;
-                }
-
-                .job-role {
-                    font-size: 1.35rem;
-                    font-weight: 700;
-                    color: var(--text-main);
-                    letter-spacing: -0.02em;
-                    margin-bottom: 0.5rem;
-                    margin-top: 0;
-                }
-
-                .job-meta {
-                    display: flex;
-                    flex-wrap: wrap;
-                    gap: 1rem;
-                }
-
-                .meta-tag {
-                    display: inline-flex;
-                    align-items: center;
-                    gap: 6px;
-                    font-size: 0.85rem;
-                    color: var(--text-muted);
-                    background: rgba(255,255,255,0.03);
-                    padding: 4px 12px;
-                    border-radius: 8px;
-                    border: 1px solid rgba(255,255,255,0.05);
-                }
-
-                .meta-icon {
-                    color: var(--primary);
-                }
-
-                .job-duration {
-                    display: inline-flex;
-                    align-items: center;
-                    gap: 8px;
-                    font-size: 0.85rem;
-                    color: var(--text-main);
-                    background: rgba(6, 182, 212, 0.1);
-                    border: 1px solid rgba(6, 182, 212, 0.2);
-                    padding: 8px 16px;
-                    border-radius: 100px;
-                    white-space: nowrap;
+                .date-text {
+                    font-size: 0.9375rem;
+                    color: var(--text-tertiary);
                     font-weight: 500;
-                    flex-shrink: 0;
-                }
-
-                .card-divider {
-                    height: 1px;
-                    width: 100%;
-                    background: linear-gradient(to right, var(--glass-border), transparent);
-                    margin-bottom: 1.5rem;
-                }
-
-                /* Description Bullets */
-                .job-description {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 1rem;
-                }
-
-                .desc-bullet-group {
-                    display: flex;
-                    align-items: flex-start;
-                    gap: 12px;
-                    transition: all 0.3s ease;
-                }
-
-                .bullet-icon-wrapper {
-                    margin-top: 4px;
-                    flex-shrink: 0;
-                }
-
-                .bullet-icon {
-                    color: rgba(255,255,255,0.3);
-                    transition: all 0.3s ease;
-                }
-
-                .desc-bullet-group:hover .bullet-icon {
-                    color: var(--secondary);
-                    transform: scale(1.1);
-                }
-
-                .desc-text {
-                    font-size: 1rem;
-                    color: var(--text-muted);
-                    line-height: 1.7;
-                    margin: 0;
-                    font-weight: 400;
                     transition: color 0.3s ease;
                 }
 
-                .desc-bullet-group:hover .desc-text {
-                    color: #E2E8F0;
+                .date-active {
+                    color: var(--text-primary);
                 }
 
-                /* Flawless Mobile Responsiveness */
-                @media (max-width: 768px) {
-                    :root {
-                        --timeline-gap: 20px; /* Shrink gap on mobile */
-                    }
-                    
-                    .experience-section {
-                        padding-top: 80px; 
-                        padding-bottom: 80px;
-                    }
-                    
-                    .experience-content-wrapper {
-                        padding: 0 1.5rem;
-                    }
+                /* 2. Node Column */
+                .timeline-node-col {
+                    position: relative;
+                    display: flex;
+                    justify-content: center;
+                    padding-top: 8px; /* Align with title */
+                }
 
-                    .premium-bento-card {
-                        padding: 1.5rem;
-                    }
-                    
-                    .timeline-node {
-                        top: 24px; /* Adjust node alignment for smaller padding */
-                    }
+                .timeline-node {
+                    width: var(--node-size);
+                    height: var(--node-size);
+                    border-radius: 50%;
+                    background-color: var(--bg-page);
+                    border: 2px solid var(--border-strong);
+                    position: relative;
+                    z-index: 2;
+                    transition: all 0.3s ease;
+                }
 
-                    .job-header {
-                        flex-direction: column; /* Stack header on mobile */
-                        gap: 1rem;
+                .node-active {
+                    border-color: var(--accent-primary);
+                    background-color: var(--accent-primary);
+                }
+
+                /* Pulsing effect for active node */
+                .node-pulse {
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    width: 24px;
+                    height: 24px;
+                    background-color: rgba(255, 255, 255, 0.15);
+                    border-radius: 50%;
+                    animation: pulse 2s infinite ease-in-out;
+                    z-index: -1;
+                }
+
+                @keyframes pulse {
+                    0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.8; }
+                    100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
+                }
+
+                /* 3. Content Column & Cards */
+                .timeline-content-col {
+                    padding-left: 24px;
+                }
+
+                .experience-card {
+                    background-color: var(--bg-card);
+                    border: 1px solid var(--border-subtle);
+                    border-radius: 16px;
+                    padding: 32px;
+                    transition: all 0.3s ease;
+                }
+
+                .experience-card:hover {
+                    background-color: var(--bg-card-hover);
+                    border-color: var(--border-strong);
+                    transform: translateY(-2px);
+                }
+
+                .card-active {
+                    border-color: rgba(255, 255, 255, 0.15);
+                }
+
+                /* Card Header elements */
+                .card-header {
+                    margin-bottom: 24px;
+                }
+
+                .mobile-date {
+                    display: none; /* Hidden on desktop */
+                }
+
+                .title-wrapper {
+                    display: flex;
+                    align-items: center;
+                    gap: 16px;
+                    flex-wrap: wrap;
+                    margin-bottom: 12px;
+                }
+
+                .job-title {
+                    font-size: 1.25rem;
+                    font-weight: 600;
+                    color: var(--text-primary);
+                    margin: 0;
+                    letter-spacing: -0.01em;
+                }
+
+                .current-badge {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 6px;
+                    padding: 4px 10px;
+                    border-radius: 99px;
+                    background: var(--accent-muted);
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+                    font-size: 0.75rem;
+                    font-weight: 500;
+                    color: var(--text-primary);
+                }
+
+                .current-badge .dot {
+                    width: 6px;
+                    height: 6px;
+                    background-color: #10B981; /* Subtle emerald indicator */
+                    border-radius: 50%;
+                }
+
+                .job-metadata {
+                    display: flex;
+                    align-items: center;
+                    flex-wrap: wrap;
+                    gap: 12px;
+                    font-size: 0.9375rem;
+                    color: var(--text-secondary);
+                    font-weight: 500;
+                }
+
+                .meta-item {
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                }
+
+                .meta-icon {
+                    color: var(--text-tertiary);
+                }
+
+                .meta-divider {
+                    color: var(--border-strong);
+                }
+
+                /* Card Body (Achievements) */
+                .achievement-list {
+                    list-style: none;
+                    padding: 0;
+                    margin: 0;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 16px;
+                }
+
+                .achievement-item {
+                    display: flex;
+                    align-items: flex-start;
+                    gap: 12px;
+                }
+
+                .achievement-icon {
+                    color: var(--text-tertiary);
+                    margin-top: 4px; /* Align with first line of text */
+                    flex-shrink: 0;
+                }
+
+                .achievement-text {
+                    font-size: 1rem;
+                    line-height: 1.6;
+                    color: var(--text-secondary);
+                }
+
+                /* Responsive Design Strategy */
+                
+                /* Tablet */
+                @media (max-width: 1024px) {
+                    .timeline-row {
+                        grid-template-columns: 140px 40px 1fr;
                     }
-                    
-                    .job-duration {
-                        width: 100%;
-                        justify-content: center;
+                    .timeline-track-container {
+                        left: 160px;
                     }
-                    
-                    .desc-text {
-                        font-size: 0.95rem;
+                    .experience-card {
+                        padding: 24px;
                     }
                 }
 
-                @media (max-width: 480px) {
-                    :root {
-                        --node-size: 16px; /* Smaller node on tiny screens */
-                        --timeline-gap: 15px;
+                /* Mobile (< 768px) */
+                @media (max-width: 767px) {
+                    .section-experience {
+                        padding: 80px 0;
                     }
                     
-                    .experience-content-wrapper {
-                        padding: 0 1rem;
+                    .section-header {
+                        margin-bottom: 60px;
                     }
-                    
-                    .meta-tag {
-                        padding: 4px 8px;
-                        font-size: 0.75rem;
+
+                    /* Collapse grid to 2 columns: Node + Card */
+                    .timeline-row {
+                        grid-template-columns: 32px 1fr;
+                        gap: 0;
+                        margin-bottom: 40px;
+                    }
+
+                    /* Hide Desktop Date */
+                    .timeline-date-col {
+                        display: none;
+                    }
+
+                    /* Adjust Track Position */
+                    .timeline-track-container {
+                        left: 16px; /* Center of the 32px node column */
+                    }
+
+                    /* Adjust Node alignment */
+                    .timeline-node-col {
+                        padding-top: 32px; /* Push down to align visually with title */
+                    }
+
+                    /* Card adjustments */
+                    .timeline-content-col {
+                        padding-left: 16px;
+                    }
+
+                    .experience-card {
+                        padding: 20px;
+                    }
+
+                    /* Reveal Mobile Date inside card */
+                    .mobile-date {
+                        display: flex;
+                        align-items: center;
+                        gap: 6px;
+                        font-size: 0.8125rem;
+                        color: var(--text-tertiary);
+                        margin-bottom: 12px;
+                        font-weight: 500;
+                        text-transform: uppercase;
+                        letter-spacing: 0.05em;
+                    }
+
+                    .job-title {
+                        font-size: 1.125rem;
+                    }
+
+                    .achievement-text {
+                        font-size: 0.9375rem;
+                    }
+                }
+
+                /* Micro Mobile (< 400px) */
+                @media (max-width: 399px) {
+                    .experience-container {
+                        padding: 0 16px;
+                    }
+                    .timeline-row {
+                        grid-template-columns: 24px 1fr;
+                    }
+                    .timeline-track-container {
+                        left: 12px;
+                    }
+                    .timeline-content-col {
+                        padding-left: 12px;
+                    }
+                    .experience-card {
+                        padding: 16px;
+                    }
+                    .job-metadata {
+                        flex-direction: column;
+                        align-items: flex-start;
+                        gap: 8px;
+                    }
+                    .meta-divider {
+                        display: none;
+                    }
+                }
+
+                /* Accessibility / Reduced Motion */
+                @media (prefers-reduced-motion: reduce) {
+                    .node-pulse {
+                        animation: none;
+                        display: none;
+                    }
+                    .experience-card {
+                        transition: none;
+                    }
+                    .experience-card:hover {
+                        transform: none;
                     }
                 }
             `}</style>
