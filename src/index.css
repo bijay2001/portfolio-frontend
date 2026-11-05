@@ -1,47 +1,141 @@
 /* ==========================================================================
-   GLOBAL VARIABLES & THEME
+   DESIGN SYSTEM  (replace your whole src/index.css with this file)
    ========================================================================== */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Sora:wght@400;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&display=swap');
+
+/* ---------- Dark theme (default) ---------- */
+:root,
+[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #070a14;
+  --bg-soft: #0b1020;
+  --surface: #0e1322;
+  --surface-2: #151b2e;
+  --text: #f3f4fb;
+  --muted: #98a1b8;
+  --line: rgba(255, 255, 255, 0.08);
+  --line-strong: rgba(255, 255, 255, 0.16);
+  --primary: #8b6cff;
+  --secondary: #22d3ee;
+  --accent: #f472b6;
+  --on-primary: #ffffff;
+  --grad: linear-gradient(135deg, #8b6cff 0%, #22d3ee 100%);
+  --glow: rgba(139, 108, 255, 0.28);
+  --shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.7);
+  --nav-bg: rgba(12, 16, 30, 0.68);
+}
+
+/* ---------- Light theme ---------- */
+[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f4f3fa;
+  --bg-soft: #ebeaf5;
+  --surface: #ffffff;
+  --surface-2: #f0eff8;
+  --text: #0c1020;
+  --muted: #5a6279;
+  --line: rgba(12, 16, 32, 0.09);
+  --line-strong: rgba(12, 16, 32, 0.18);
+  --primary: #6240f0;
+  --secondary: #0891b2;
+  --accent: #db2777;
+  --on-primary: #ffffff;
+  --grad: linear-gradient(135deg, #6240f0 0%, #0891b2 100%);
+  --glow: rgba(98, 64, 240, 0.14);
+  --shadow: 0 24px 50px -26px rgba(30, 30, 80, 0.3);
+  --nav-bg: rgba(255, 255, 255, 0.72);
+}
 
 :root {
-    /* Color Palette */
-    --bg-deep: #050812;      /* Deep dark background for the whole app */
-    --card-bg: #0C101A;      /* Slightly lighter background for bento cards */
-    --primary: #7C3AED;      /* Neon Purple */
-    --secondary: #06B6D4;    /* Neon Cyan */
-    --accent: #EC4899;       /* Neon Pink */
-    
-    /* Text Colors */
-    --text-main: #FFFFFF;
-    --text-muted: #9CA3AF;
-    
-    /* Glassmorphism Borders */
-    --glass-border: rgba(255, 255, 255, 0.08);
-    --glass-bg: rgba(255, 255, 255, 0.03);
+  --section-pad: clamp(72px, 10vw, 120px);
+  --section-gap: 0px;
+  --radius: 20px;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --font-display: 'Bricolage Grotesque', 'Instrument Sans', system-ui, sans-serif;
+  --font-body: 'Instrument Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
 
-    /* --- SPACING SYSTEM --- */
-    --section-padding-y: 20px; /* Top and bottom padding for every section */
+  /* Legacy aliases: old components keep working while you migrate */
+  --bg-deep: var(--bg);
+  --card-bg: var(--surface);
+  --text-main: var(--text);
+  --text-muted: var(--muted);
+  --glass-border: var(--line);
+  --glass-bg: var(--surface-2);
+  --section-padding-y: 20px;
 }
 
-/* ==========================================================================
-   CSS RESETS & BASE STYLES
-   ========================================================================== */
-*, *::before, *::after {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-html {
-    scroll-behavior: smooth; /* Enables smooth scrolling for navbar anchor links */
-    overflow-x: hidden;
-}
-
+/* ---------- Reset / base ---------- */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; overflow-x: hidden; }
 body {
-    background-color: var(--bg-deep);
-    color: var(--text-main);
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    overflow-x: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.4s var(--ease), color 0.4s var(--ease);
+}
+a { color: inherit; text-decoration: none; }
+img, svg { max-width: 100%; display: block; }
+button { font: inherit; color: inherit; cursor: pointer; background: none; border: 0; }
+h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: -0.02em; line-height: 1.1; color: var(--text); }
+section[id] { scroll-margin-top: 96px; }
+::selection { background: var(--primary); color: var(--on-primary); }
+:focus-visible { outline: 2px solid var(--secondary); outline-offset: 3px; border-radius: 8px; }
+
+/* Ambient backdrop: soft light + faint dot grid */
+body::before {
+  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(55% 45% at 12% -5%, var(--glow), transparent 70%),
+    radial-gradient(40% 35% at 95% 8%, color-mix(in srgb, var(--secondary) 14%, transparent), transparent 70%);
+}
+body::after {
+  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background-image: radial-gradient(var(--line) 1px, transparent 1px);
+  background-size: 28px 28px;
+  -webkit-mask-image: radial-gradient(70% 55% at 50% 0%, #000, transparent);
+  mask-image: radial-gradient(70% 55% at 50% 0%, #000, transparent);
+}
+
+/* Thin scrollbar */
+* { scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; }
+
+/* ---------- Shared building blocks (prefixed "bk-" to avoid Bootstrap clashes) ---------- */
+.bk-container { width: min(1160px, 92%); margin-inline: auto; }
+.bk-section { padding: var(--section-pad) 0; position: relative; }
+.bk-title { font-size: clamp(2rem, 4.5vw, 3.25rem); font-weight: 800; }
+.bk-lead { color: var(--muted); font-size: clamp(1rem, 1.4vw, 1.125rem); max-width: 62ch; }
+.bk-grad-text { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+.bk-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 13px 24px; border-radius: 999px; font-weight: 600; font-size: 0.95rem;
+  transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease), background-color 0.25s, border-color 0.25s;
+}
+.bk-btn:hover { transform: translateY(-2px); }
+.bk-btn--primary { background: var(--primary); color: var(--on-primary); box-shadow: 0 10px 30px -10px var(--primary); }
+.bk-btn--primary:hover { box-shadow: 0 14px 34px -8px var(--primary); }
+.bk-btn--ghost { border: 1px solid var(--line-strong); background: var(--surface); }
+.bk-btn--ghost:hover { border-color: var(--primary); }
+.bk-btn--sm { padding: 9px 16px; font-size: 0.85rem; }
+
+.bk-card {
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+  transition: transform 0.35s var(--ease), border-color 0.35s, box-shadow 0.35s;
+}
+.bk-card:hover { transform: translateY(-4px); border-color: var(--line-strong); box-shadow: var(--shadow); }
+
+.bk-icon-btn {
+  width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center;
+  border: 1px solid var(--line); background: var(--surface-2); color: var(--text);
+  transition: border-color 0.2s, transform 0.2s var(--ease);
+}
+.bk-icon-btn:hover { border-color: var(--primary); transform: translateY(-1px); }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
